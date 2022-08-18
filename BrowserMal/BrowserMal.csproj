@@ -72,7 +72,7 @@
     <Compile Include="Cookie\CookieModel.cs" />
     <Compile Include="Cookie\CookieManager.cs" />
     <Compile Include="Credential\CredentialModel.cs" />
-    <Compile Include="File\FileManager.cs" />
+    <Compile Include="Filesaver\FileManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLite\GenericReader.cs" />
   </ItemGroup>

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace BrowserMal.File
+namespace BrowserMal.Filesaver
 {
     public class FileManager
     {
