@@ -28,13 +28,13 @@ namespace BrowserMal.Browser
 			return list;
 		}
 
-		public static string ChromiumToUnixTimestamp(long webkitTimestamp)
+		public static string ChromiumToUnixTimestamp(long chromiumTimestamp)
         {
 			DateTime dateChromium = new DateTime(1601, 1, 1);
 			DateTime dateUnix = new DateTime(1970, 1, 1);
 
 			TimeSpan difference = dateUnix.Subtract(dateChromium);
-			double resolvedTimestamp = (webkitTimestamp / 1000000) - difference.TotalSeconds;
+			double resolvedTimestamp = (chromiumTimestamp / 1000000) - difference.TotalSeconds;
 
 			return resolvedTimestamp.ToString();
 		}
