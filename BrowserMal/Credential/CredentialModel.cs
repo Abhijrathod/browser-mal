@@ -1,4 +1,4 @@
-﻿namespace BrowserMal
+﻿namespace BrowserMal.Credential
 {
     public class CredentialModel
     {
