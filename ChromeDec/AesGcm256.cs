@@ -37,65 +37,38 @@ namespace ChromeDec
             if (!File.Exists(path))
                 return null;
 
-            var v = File.ReadAllText(path);
+            string jsonString = File.ReadAllText(path);
 
-            dynamic json = JsonConvert.DeserializeObject(v);
-            string key = json.os_crypt.encrypted_key;
+            dynamic jsonObject = JsonConvert.DeserializeObject(jsonString);
+            string key = jsonObject.os_crypt.encrypted_key;
 
-            var src = Convert.FromBase64String(key);
-            var encryptedKey = src.Skip(5).ToArray();
+            byte[] src = Convert.FromBase64String(key);
+            byte[] encryptedKey = src.Skip(5).ToArray();
 
-            var decryptedKey = ProtectedData.Unprotect(encryptedKey, null, DataProtectionScope.CurrentUser);
-
-            return decryptedKey;
-        }
-
-        public static byte[] GetKey(string basePath = "")
-        {
-            string parentPath = Directory.GetParent(basePath).Parent.FullName;
-
-            var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);// APPDATA
-            var path = Path.GetFullPath(appdata + "\\..\\Local\\Google\\Chrome\\User Data\\Local State");
-
-            //string path = Path.Combine(parentPath, "\\Local State");
-
-            if (!File.Exists(path))
-                return null;
-
-            var v = File.ReadAllText(path);
-            
-            dynamic json = JsonConvert.DeserializeObject(v);
-            string key = json.os_crypt.encrypted_key;
-
-            var src = Convert.FromBase64String(key);
-            var encryptedKey = src.Skip(5).ToArray();
-
-            var decryptedKey = ProtectedData.Unprotect(encryptedKey, null, DataProtectionScope.CurrentUser);
-
-            return decryptedKey;
+            return ProtectedData.Unprotect(encryptedKey, null, DataProtectionScope.CurrentUser);
         }
 
         public static string Decrypt(byte[] encryptedBytes, byte[] key, byte[] iv)
         {
-            var sR = string.Empty;
+            var decryptedValue = string.Empty;
             try
             {
-                var cipher = new GcmBlockCipher(new AesEngine());
-                var parameters = new AeadParameters(new KeyParameter(key), 128, iv, null);
+                GcmBlockCipher cipher = new GcmBlockCipher(new AesEngine());
+                AeadParameters parameters = new AeadParameters(new KeyParameter(key), 128, iv, null);
 
                 cipher.Init(false, parameters);
-                var plainBytes = new byte[cipher.GetOutputSize(encryptedBytes.Length)];
+
+                byte[] plainBytes = new byte[cipher.GetOutputSize(encryptedBytes.Length)];
                 var retLen = cipher.ProcessBytes(encryptedBytes, 0, encryptedBytes.Length, plainBytes, 0);
                 cipher.DoFinal(plainBytes, retLen);
 
-                sR = Encoding.UTF8.GetString(plainBytes).TrimEnd("\r\n\0".ToCharArray());
+                decryptedValue = Encoding.UTF8.GetString(plainBytes).TrimEnd("\r\n\0".ToCharArray());
             }
             catch (Exception)
             {
-               
             }
 
-            return sR;
+            return decryptedValue;
         }
 
         public static void Prepare(byte[] encryptedData, out byte[] nonce, out byte[] ciphertextTag)

