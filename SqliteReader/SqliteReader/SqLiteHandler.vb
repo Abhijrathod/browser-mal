@@ -6,59 +6,30 @@ Imports Microsoft.VisualBasic.CompilerServices
 Public Class SqLiteHandler
 
     Private Structure sqlite_master_entry
-        ' Token: 0x0400005E RID: 94
         Public row_id As Long
-
-        ' Token: 0x0400005F RID: 95
         Public item_type As String
-
-        ' Token: 0x04000060 RID: 96
         Public item_name As String
-
-        ' Token: 0x04000061 RID: 97
         Public astable_name As String
-
-        ' Token: 0x04000062 RID: 98
         Public root_num As Long
-
-        ' Token: 0x04000063 RID: 99
         Public sql_statement As String
     End Structure
 
     Private Structure record_header_field
-        ' Token: 0x0400005C RID: 92
         Public size As Long
-
-        ' Token: 0x0400005D RID: 93
         Public type As Long
     End Structure
 
     Private Structure table_entry
-        ' Token: 0x04000064 RID: 100
         Public row_id As Long
-
-        ' Token: 0x04000065 RID: 101
         Public content As String()
     End Structure
 
     Private db_bytes As Byte()
-
-    ' Token: 0x04000056 RID: 86
     Private mEncoding As ULong
-
-    ' Token: 0x04000057 RID: 87
     Private field_names As String()
-
-    ' Token: 0x04000058 RID: 88
     Private master_table_entries As SqLiteHandler.sqlite_master_entry()
-
-    ' Token: 0x04000059 RID: 89
     Private page_size As UShort
-
-    ' Token: 0x0400005A RID: 90
     Private SQLDataTypeSize As Byte()
-
-    ' Token: 0x0400005B RID: 91
     Private table_entries As SqLiteHandler.table_entry()
 
     <MethodImpl(MethodImplOptions.NoInlining Or MethodImplOptions.NoOptimization)>
@@ -95,15 +66,12 @@ Public Class SqLiteHandler
         Dim num3 As Integer = 0
         Dim num4 As Integer = num2
         For i As Integer = num3 To num4
-            ' The following expression was wrapped in a unchecked-expression
-            ' The following expression was wrapped in a checked-expression
             num = (num << 8 Or CULng(Me.db_bytes(startIndex + i)))
         Next
         Return num
     End Function
 
     Private Function CVL(startIndex As Integer, endIndex As Integer) As Long
-        ' The following expression was wrapped in a checked-statement
         endIndex += 1
         Dim array As Byte() = New Byte(7) {}
         Dim num As Integer = endIndex - startIndex
@@ -128,16 +96,11 @@ Public Class SqLiteHandler
         End If
         For i As Integer = endIndex - 1 To startIndex Step -1
             If i - 1 >= startIndex Then
-                ' The following expression was wrapped in a unchecked-expression
-                ' The following expression was wrapped in a checked-expression
-                ' The following expression was wrapped in a checked-expression
                 array(num4) = CByte(((CInt(CByte((CUInt(Me.db_bytes(i)) >> (num2 - 1 And 7 And 7)))) And 255 >> num2) Or CInt(CByte((Me.db_bytes(i - 1) << (num3 And 7 And 7))))))
                 num2 += 1
                 num4 += 1
                 num3 -= 1
             ElseIf Not flag Then
-                ' The following expression was wrapped in a unchecked-expression
-                ' The following expression was wrapped in a checked-expression
                 array(num4) = CByte((CInt((CByte((CUInt(Me.db_bytes(i)) >> (num2 - 1 And 7 And 7))))) And 255 >> num2))
             End If
         Next
@@ -191,7 +154,6 @@ Public Class SqLiteHandler
         Return Me.GetValue(row_num, num)
     End Function
 
-    ' Token: 0x06000097 RID: 151 RVA: 0x00004B1C File Offset: 0x00002D1C
     Private Function GVL(startIndex As Integer) As Integer
         If startIndex > Me.db_bytes.Length Then
             Return 0
@@ -209,13 +171,11 @@ Public Class SqLiteHandler
         Return startIndex + 8
     End Function
 
-    ' Token: 0x06000098 RID: 152 RVA: 0x00004B74 File Offset: 0x00002D74
     Private Function IsOdd(value As Long) As Boolean
         Return (value And 1L) = 1L
     End Function
 
     Private Sub ReadMasterTable(Offset As ULong)
-        ' The following expression was wrapped in a checked-statement
         If Me.db_bytes(CInt(Offset)) = 13 Then
             Dim num As Decimal = New Decimal(Offset)
             Dim num2 As Decimal = New Decimal(Me.ConvertToInteger(Convert.ToInt32(Decimal.Add(num, 3D)), 2))
@@ -277,8 +237,6 @@ Public Class SqLiteHandler
                             array2(num14) = CLng(Math.Round(Math.Round(CDbl((array2(num14) - 12L)) / 2.0)))
                         End If
                     Else
-                        ' The following expression was wrapped in a unchecked-expression
-                        ' The following expression was wrapped in a checked-expression
                         array2(num14) = CLng((CULng(Me.SQLDataTypeSize(CInt(array2(num14))))))
                     End If
                     num14 += 1
@@ -452,7 +410,6 @@ Public Class SqLiteHandler
                     num23 = New Decimal(CInt(Me.page_size))
                     Me.ReadMasterTable(Convert.ToUInt64(Decimal.Multiply(d37, num23)))
                 Else
-                    ' The following expression was wrapped in a unchecked-expression
                     num26 = New Decimal(Me.ConvertToInteger(CInt((Offset + CULng(num33))), 4))
                     Dim d38 As Decimal = Decimal.Subtract(num26, 1D)
                     num25 = New Decimal(CInt(Me.page_size))
@@ -467,7 +424,6 @@ Public Class SqLiteHandler
         End If
     End Sub
 
-    ' Token: 0x0600009A RID: 154 RVA: 0x00005520 File Offset: 0x00003720
     Public Function ReadTable(TableName As String) As Boolean
         Dim num As Integer = -1
         Dim num2 As Integer = Me.master_table_entries.Length - 1
@@ -501,9 +457,7 @@ Public Class SqLiteHandler
         Return Me.ReadTableFromOffset(CULng(((Me.master_table_entries(num).root_num - 1L) * CLng((CULng(Me.page_size))))))
     End Function
 
-    ' Token: 0x0600009B RID: 155 RVA: 0x0000568C File Offset: 0x0000388C
     Private Function ReadTableFromOffset(offset As ULong) As Boolean
-        ' The following expression was wrapped in a checked-statement
         If Me.db_bytes(CInt(offset)) = 13 Then
             Dim num As Decimal = New Decimal(offset)
             Dim num2 As Decimal = New Decimal(Me.ConvertToInteger(Convert.ToInt32(Decimal.Add(num, 3D)), 2))
@@ -566,8 +520,6 @@ Public Class SqLiteHandler
                     If array(num16).type > 9L Then
                         array(num16).size = If(Me.IsOdd(array(num16).type), CLng(Math.Round(Math.Round(CDbl((array(num16).type - 13L)) / 2.0))), CLng(Math.Round(Math.Round(CDbl((array(num16).type - 12L)) / 2.0))))
                     Else
-                        ' The following expression was wrapped in a unchecked-expression
-                        ' The following expression was wrapped in a checked-expression
                         array(num16).size = CLng((CULng(Me.SQLDataTypeSize(CInt(array(num16).type)))))
                     End If
                     num15 = num15 + CLng((num12 - num9)) + 1L
