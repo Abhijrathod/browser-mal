@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace BrowserMal.Browser
@@ -26,5 +27,22 @@ namespace BrowserMal.Browser
 
 			return list;
 		}
+
+		public static string ChromiumToUnixTimestamp(long webkitTimestamp)
+        {
+			DateTime dateChromium = new DateTime(1601, 1, 1);
+			DateTime dateUnix = new DateTime(1970, 1, 1);
+
+			TimeSpan difference = dateUnix.Subtract(dateChromium);
+			double resolvedTimestamp = (webkitTimestamp / 1000000) - difference.TotalSeconds;
+
+			return resolvedTimestamp.ToString();
+		}
+
+		public static DateTime GetDateTimeFromTimestamp(string timestamp)
+        {
+			return DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(timestamp)).DateTime;
+		}
+
 	}
 }

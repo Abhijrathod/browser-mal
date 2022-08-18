@@ -73,6 +73,7 @@
     <Compile Include="Cookie\CookieManager.cs" />
     <Compile Include="CredentialModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SQLite\GenericReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
