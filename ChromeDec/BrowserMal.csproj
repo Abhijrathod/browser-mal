@@ -8,7 +8,7 @@
     <ProjectGuid>{8AD69880-D575-4798-9B65-1695BC013D25}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ChromeDec</RootNamespace>
+    <RootNamespace>BrowserMal</RootNamespace>
     <AssemblyName>ChromeDec</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

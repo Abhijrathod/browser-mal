@@ -1,4 +1,4 @@
-﻿namespace ChromeDec
+﻿namespace BrowserMal
 {
     public class CredentialModel
     {

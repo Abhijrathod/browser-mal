@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using SqliteReader;
-using ChromeDec.Browser;
-using ChromeDec.AES;
+using BrowserMal.Browser;
+using BrowserMal.AES;
 
-namespace ChromeDec
+namespace BrowserMal
 {
     public class Class1
     {

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ChromeDec.AES
+namespace BrowserMal.AES
 {
     public class AesGcm256
     {

@@ -1,4 +1,4 @@
-﻿namespace ChromeDec.Browser
+﻿namespace BrowserMal.Browser
 {
     public class BrowserModel
     {

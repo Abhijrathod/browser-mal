@@ -1,4 +1,4 @@
-﻿namespace ChromeDec.Cookie
+﻿namespace BrowserMal.Cookie
 {
     public class CookieModel
     {
