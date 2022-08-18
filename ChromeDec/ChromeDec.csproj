@@ -64,12 +64,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AesGcm256.cs" />
+    <Compile Include="AES\AesGcm256.cs" />
     <Compile Include="Browser\BrowserManager.cs" />
     <Compile Include="Browser\BrowserModel.cs" />
     <Compile Include="Browser\Util.cs" />
     <Compile Include="Class1.cs" />
-    <Compile Include="CookieModel.cs" />
+    <Compile Include="Cookie\CookieModel.cs" />
     <Compile Include="Cookie\CookieManager.cs" />
     <Compile Include="CredentialModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -78,6 +78,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

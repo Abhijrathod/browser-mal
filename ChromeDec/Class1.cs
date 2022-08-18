@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using SqliteReader;
 using ChromeDec.Browser;
+using ChromeDec.AES;
 
 namespace ChromeDec
 {

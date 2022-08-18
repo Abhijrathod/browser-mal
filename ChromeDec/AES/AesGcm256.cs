@@ -8,7 +8,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ChromeDec
+namespace ChromeDec.AES
 {
     public class AesGcm256
     {
@@ -24,7 +24,7 @@ namespace ChromeDec
             }
             catch (Exception)
             {
-                
+
             }
             return result;
         }

@@ -1,4 +1,4 @@
-﻿namespace ChromeDec
+﻿namespace ChromeDec.Cookie
 {
     public class CookieModel
     {
