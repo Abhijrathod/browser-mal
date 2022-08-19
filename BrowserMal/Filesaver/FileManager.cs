@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Text;
 
 namespace BrowserMal.Filesaver
@@ -7,12 +8,13 @@ namespace BrowserMal.Filesaver
     {
         public static void Save<T>(List<T> list, string outputPath)
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            //StringBuilder stringBuilder = new StringBuilder();
+            string json = JsonConvert.SerializeObject(list, Formatting.Indented);
 
-            foreach (T item in list)
-                stringBuilder.AppendLine(item.ToString());
+            /*foreach (T item in list)
+                stringBuilder.AppendLine(item.ToString());*/
 
-            System.IO.File.WriteAllText(@"logins\" + outputPath, stringBuilder.ToString());
+            System.IO.File.WriteAllText(@"logins\" + outputPath, json);
         }
     }
 }

