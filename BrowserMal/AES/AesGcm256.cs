@@ -45,6 +45,11 @@ namespace BrowserMal.AES
             if (File.Exists(path))
                 return path;
 
+            path = basePath + localStateFile;
+
+            if (File.Exists(path))
+                return path;
+
             return null;
         }
 

