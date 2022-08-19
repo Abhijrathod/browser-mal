@@ -12,10 +12,5 @@
             Username = username;
             Password = password;
         }
-
-        public override string ToString()
-        {
-            return $"url: {Url} | Username: {Username} | Password: {Password}";
-        }
     }
 }

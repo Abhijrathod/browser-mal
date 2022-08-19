@@ -14,10 +14,5 @@
             Path = path;
             Value = value;
         }
-
-        public override string ToString()
-        {
-            return $"Host: {Host} | Name: {Name} | Value: {Value}";
-        }
     }
 }
