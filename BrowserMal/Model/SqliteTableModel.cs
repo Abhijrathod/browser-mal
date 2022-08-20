@@ -4,13 +4,9 @@ namespace BrowserMal.Model
 {
     public class SqliteTableModel
     {
-        private List<ColumnModel> columns;
+        private readonly List<ColumnModel> columns;
 
-        public SqliteTableModel(List<ColumnModel> columns) 
-        {
-            columns = new List<ColumnModel>();
-            this.columns = columns;
-        }
+        public SqliteTableModel(List<ColumnModel> columns) => this.columns = columns;
 
         public List<ColumnModel> GetColumns() => columns;
     }
