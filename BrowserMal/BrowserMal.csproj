@@ -59,12 +59,14 @@
     <Compile Include="Browser\BrowserModel.cs" />
     <Compile Include="Browser\Util.cs" />
     <Compile Include="Class1.cs" />
+    <Compile Include="Model\ColumnModel.cs" />
     <Compile Include="Model\CookieModel.cs" />
     <Compile Include="Model\CredentialModel.cs" />
     <Compile Include="Filesaver\FileManager.cs" />
     <Compile Include="Manager\GenericManager.cs" />
     <Compile Include="Model\AddressesModel.cs" />
     <Compile Include="Model\CreditCardModel.cs" />
+    <Compile Include="Model\SqliteTableModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SQLite\SqliteHandler.cs" />
     <Compile Include="Util\ProcessUtil.cs" />

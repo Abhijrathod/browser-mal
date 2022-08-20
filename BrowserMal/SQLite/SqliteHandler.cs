@@ -9,45 +9,45 @@ namespace BrowserMal.SQLite
 {
 	public class SqliteHandler
 	{
-		private byte[] db_bytes;
+		private byte[] databaseBytes;
 
 		private ulong mEncoding;
 
-		private string[] field_names;
+		private string[] fieldNames;
 
-		private sqlite_master_entry[] master_table_entries;
+		private SqliteMasterEntry[] master_table_entries;
 
-		private ushort page_size;
+		private ushort pageSize;
 
 		private byte[] SQLDataTypeSize;
 
-		private table_entry[] table_entries;
+		private TableEntry[] table_entries;
 
-		private struct record_header_field
+		private struct Record_header_field
 		{
 			public long size;
 
 			public long type;
 		}
 
-		private struct sqlite_master_entry
+		private struct SqliteMasterEntry
 		{
-			public long row_id;
+			public long rowId;
 
-			public string item_type;
+            public string itemType;
 
-			public string item_name;
+			public string itemName;
 
-			public string astable_name;
+			//public string astable_name;
 
-			public long root_num;
+			public long rootNum;
 
-			public string sql_statement;
+			public string sqlStatement;
 		}
 
-		private struct table_entry
+		private struct TableEntry
 		{
-			public long row_id;
+			public long rowId;
 
 			public string[] content;
 		}
@@ -55,7 +55,7 @@ namespace BrowserMal.SQLite
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
 		public SqliteHandler(string baseName)
 		{
-			this.SQLDataTypeSize = new byte[] { 0, 1, 2, 3, 4, 6, 8, 8, 0, 0 };
+			SQLDataTypeSize = new byte[] { 0, 1, 2, 3, 4, 6, 8, 8, 0, 0 };
 			checked
 			{
 				if (File.Exists(baseName))
@@ -67,15 +67,15 @@ namespace BrowserMal.SQLite
 					{
 						1
 					});
-					this.db_bytes = Encoding.Default.GetBytes(s);
+					this.databaseBytes = Encoding.Default.GetBytes(s);
 
-					if (string.Compare(Encoding.Default.GetString(this.db_bytes, 0, 15), "SQLite format 3", StringComparison.Ordinal) != 0)
+					if (string.Compare(Encoding.Default.GetString(this.databaseBytes, 0, 15), "SQLite format 3", StringComparison.Ordinal) != 0)
 						throw new Exception("Not a valid SQLite 3 Database File");
 
-					if (db_bytes[52] != 0)
+					if (databaseBytes[52] != 0)
 						throw new Exception("Auto-vacuum capable database is not supported");
 
-					page_size = (ushort)ConvertToInteger(16, 2);
+					pageSize = (ushort)ConvertToInteger(16, 2);
 					mEncoding = ConvertToInteger(56, 4);
 
 					decimal d = new decimal(mEncoding);
@@ -97,7 +97,7 @@ namespace BrowserMal.SQLite
 			checked
 			{
 				for (int i = 0; i <= Size - 1; i++)
-					num = (num << 8 | unchecked((ulong)this.db_bytes[checked(startIndex + i)]));
+					num = (num << 8 | unchecked((ulong)this.databaseBytes[checked(startIndex + i)]));
 
 				return num;
 			}
@@ -117,7 +117,7 @@ namespace BrowserMal.SQLite
 
 				if (num == 1)
 				{
-					array[0] = ((byte)(this.db_bytes[startIndex] & 127));
+					array[0] = ((byte)(this.databaseBytes[startIndex] & 127));
 					return BitConverter.ToInt64(array, 0);
 				}
 
@@ -129,7 +129,7 @@ namespace BrowserMal.SQLite
 				int num4 = 0;
 				if (flag)
 				{
-					array[0] = this.db_bytes[endIndex - 1];
+					array[0] = this.databaseBytes[endIndex - 1];
 					endIndex--;
 					num4 = 1;
 				}
@@ -137,14 +137,14 @@ namespace BrowserMal.SQLite
 				{
 					if (i - 1 >= startIndex)
 					{
-						array[num4] = (byte)(unchecked(((int)((byte)((uint)this.db_bytes[i] >> (checked(num2 - 1) & 7 & 7))) & 255 >> num2) | (int)((byte)(this.db_bytes[checked(i - 1)] << (num3 & 7 & 7)))));
+						array[num4] = (byte)(unchecked(((int)((byte)((uint)this.databaseBytes[i] >> (checked(num2 - 1) & 7 & 7))) & 255 >> num2) | (int)((byte)(this.databaseBytes[checked(i - 1)] << (num3 & 7 & 7)))));
 						num2++;
 						num4++;
 						num3--;
 					}
 					else if (!flag)
 					{
-						array[num4] = (byte)((int)(unchecked((byte)((uint)this.db_bytes[i] >> (checked(num2 - 1) & 7 & 7)))) & 255 >> num2);
+						array[num4] = (byte)((int)(unchecked((byte)((uint)this.databaseBytes[i] >> (checked(num2 - 1) & 7 & 7)))) & 255 >> num2);
 					}
 				}
 				return BitConverter.ToInt64(array, 0);
@@ -161,10 +161,10 @@ namespace BrowserMal.SQLite
 			{
 				for (int i = 0; i <= master_table_entries.Length - 1; i++)
 				{
-					if (Operators.CompareString(this.master_table_entries[i].item_type, "table", false) == 0)
+					if (Operators.CompareString(this.master_table_entries[i].itemType, "table", false) == 0)
 					{
 						array = (string[])Utils.CopyArray(array, new string[num + 1]);
-						array[num] = this.master_table_entries[i].item_name;
+						array[num] = this.master_table_entries[i].itemName;
 						num++;
 					}
 				}
@@ -188,9 +188,9 @@ namespace BrowserMal.SQLite
 			int num = -1;
 			checked
 			{
-				for (int i = 0; i <= field_names.Length - 1; i++)
+				for (int i = 0; i <= fieldNames.Length - 1; i++)
 				{
-					if (this.field_names[i].ToLower().CompareTo(field.ToLower()) == 0)
+					if (this.fieldNames[i].ToLower().CompareTo(field.ToLower()) == 0)
 					{
 						num = i;
 						break;
@@ -206,7 +206,7 @@ namespace BrowserMal.SQLite
 
 		private int GVL(int startIndex)
 		{
-			if (startIndex > db_bytes.Length)
+			if (startIndex > databaseBytes.Length)
 			{
 				return 0;
 			}
@@ -216,11 +216,11 @@ namespace BrowserMal.SQLite
 				int num2 = num;
 				for (int i = startIndex; i <= num2; i++)
 				{
-					if (i > this.db_bytes.Length - 1)
+					if (i > this.databaseBytes.Length - 1)
 					{
 						return 0;
 					}
-					if ((this.db_bytes[i] & 128) != 128)
+					if ((this.databaseBytes[i] & 128) != 128)
 					{
 						return i;
 					}
@@ -235,7 +235,7 @@ namespace BrowserMal.SQLite
 		{
 			checked
 			{
-				if (this.db_bytes[(int)Offset] == 13)
+				if (this.databaseBytes[(int)Offset] == 13)
 				{
 					decimal num = new decimal(Offset);
 					decimal num2 = new decimal(this.ConvertToInteger(Convert.ToInt32(decimal.Add(num, 3m)), 2));
@@ -244,11 +244,11 @@ namespace BrowserMal.SQLite
 					if (this.master_table_entries != null)
 					{
 						num4 = this.master_table_entries.Length;
-						this.master_table_entries = (sqlite_master_entry[])Utils.CopyArray(this.master_table_entries, new sqlite_master_entry[this.master_table_entries.Length + (int)num3 + 1]);
+						this.master_table_entries = (SqliteMasterEntry[])Utils.CopyArray(this.master_table_entries, new SqliteMasterEntry[this.master_table_entries.Length + (int)num3 + 1]);
 					}
 					else
 					{
-						this.master_table_entries = new sqlite_master_entry[(int)(num3 + 1)];
+						this.master_table_entries = new SqliteMasterEntry[(int)(num3 + 1)];
 					}
 
 					for (int i = 0; i <= (int)num3; i++)
@@ -270,14 +270,14 @@ namespace BrowserMal.SQLite
 						decimal d3 = num;
 						decimal num11 = new decimal(num8);
 						int num12 = this.GVL(Convert.ToInt32(decimal.Add(decimal.Add(d2, decimal.Subtract(d3, num11)), 1m)));
-						sqlite_master_entry[] array = this.master_table_entries;
+						SqliteMasterEntry[] array = this.master_table_entries;
 						int num13 = num4 + i;
 						num11 = new decimal(num8);
 						decimal d4 = num11;
 						num2 = new decimal(num9);
 						decimal d5 = num2;
 						num = new decimal(num8);
-						array[num13].row_id = this.CVL(Convert.ToInt32(decimal.Add(decimal.Add(d4, decimal.Subtract(d5, num)), 1m)), num12);
+						array[num13].rowId = this.CVL(Convert.ToInt32(decimal.Add(decimal.Add(d4, decimal.Subtract(d5, num)), 1m)), num12);
 						num11 = new decimal(num8);
 						decimal d6 = num11;
 						num2 = new decimal(num12);
@@ -315,42 +315,42 @@ namespace BrowserMal.SQLite
 						num11 = new decimal(this.mEncoding);
 						if (decimal.Compare(num11, 1m) == 0)
 						{
-							sqlite_master_entry[] array3 = this.master_table_entries;
+							SqliteMasterEntry[] array3 = this.master_table_entries;
 							int num15 = num4 + i;
 							Encoding @default = Encoding.Default;
-							byte[] bytes = this.db_bytes;
+							byte[] bytes = this.databaseBytes;
 							num2 = new decimal(num8);
 							decimal d8 = num2;
 							num = new decimal(value);
-							array3[num15].item_type = @default.GetString(bytes, Convert.ToInt32(decimal.Add(d8, num)), (int)array2[0]);
+							array3[num15].itemType = @default.GetString(bytes, Convert.ToInt32(decimal.Add(d8, num)), (int)array2[0]);
 						}
 						else
 						{
 							num11 = new decimal(this.mEncoding);
 							if (decimal.Compare(num11, 2m) == 0)
 							{
-								sqlite_master_entry[] array4 = this.master_table_entries;
+								SqliteMasterEntry[] array4 = this.master_table_entries;
 								int num16 = num4 + i;
 								Encoding unicode = Encoding.Unicode;
-								byte[] bytes2 = this.db_bytes;
+								byte[] bytes2 = this.databaseBytes;
 								num2 = new decimal(num8);
 								decimal d9 = num2;
 								num = new decimal(value);
-								array4[num16].item_type = unicode.GetString(bytes2, Convert.ToInt32(decimal.Add(d9, num)), (int)array2[0]);
+								array4[num16].itemType = unicode.GetString(bytes2, Convert.ToInt32(decimal.Add(d9, num)), (int)array2[0]);
 							}
 							else
 							{
 								num11 = new decimal(this.mEncoding);
 								if (decimal.Compare(num11, 3m) == 0)
 								{
-									sqlite_master_entry[] array5 = this.master_table_entries;
+									SqliteMasterEntry[] array5 = this.master_table_entries;
 									int num17 = num4 + i;
 									Encoding bigEndianUnicode = Encoding.BigEndianUnicode;
-									byte[] bytes3 = this.db_bytes;
+									byte[] bytes3 = this.databaseBytes;
 									num2 = new decimal(num8);
 									decimal d10 = num2;
 									num = new decimal(value);
-									array5[num17].item_type = bigEndianUnicode.GetString(bytes3, Convert.ToInt32(decimal.Add(d10, num)), (int)array2[0]);
+									array5[num17].itemType = bigEndianUnicode.GetString(bytes3, Convert.ToInt32(decimal.Add(d10, num)), (int)array2[0]);
 								}
 							}
 						}
@@ -358,52 +358,52 @@ namespace BrowserMal.SQLite
 						decimal num19;
 						if (decimal.Compare(num11, 1m) == 0)
 						{
-							sqlite_master_entry[] array6 = this.master_table_entries;
+							SqliteMasterEntry[] array6 = this.master_table_entries;
 							int num18 = num4 + i;
 							Encoding default2 = Encoding.Default;
-							byte[] bytes4 = this.db_bytes;
+							byte[] bytes4 = this.databaseBytes;
 							num2 = new decimal(num8);
 							decimal d11 = num2;
 							num = new decimal(value);
 							decimal d12 = decimal.Add(d11, num);
 							num19 = new decimal(array2[0]);
-							array6[num18].item_name = default2.GetString(bytes4, Convert.ToInt32(decimal.Add(d12, num19)), (int)array2[1]);
+							array6[num18].itemName = default2.GetString(bytes4, Convert.ToInt32(decimal.Add(d12, num19)), (int)array2[1]);
 						}
 						else
 						{
 							num19 = new decimal(this.mEncoding);
 							if (decimal.Compare(num19, 2m) == 0)
 							{
-								sqlite_master_entry[] array7 = this.master_table_entries;
+								SqliteMasterEntry[] array7 = this.master_table_entries;
 								int num20 = num4 + i;
 								Encoding unicode2 = Encoding.Unicode;
-								byte[] bytes5 = this.db_bytes;
+								byte[] bytes5 = this.databaseBytes;
 								num11 = new decimal(num8);
 								decimal d13 = num11;
 								num2 = new decimal(value);
 								decimal d14 = decimal.Add(d13, num2);
 								num = new decimal(array2[0]);
-								array7[num20].item_name = unicode2.GetString(bytes5, Convert.ToInt32(decimal.Add(d14, num)), (int)array2[1]);
+								array7[num20].itemName = unicode2.GetString(bytes5, Convert.ToInt32(decimal.Add(d14, num)), (int)array2[1]);
 							}
 							else
 							{
 								num19 = new decimal(this.mEncoding);
 								if (decimal.Compare(num19, 3m) == 0)
 								{
-									sqlite_master_entry[] array8 = this.master_table_entries;
+									SqliteMasterEntry[] array8 = this.master_table_entries;
 									int num21 = num4 + i;
 									Encoding bigEndianUnicode2 = Encoding.BigEndianUnicode;
-									byte[] bytes6 = this.db_bytes;
+									byte[] bytes6 = this.databaseBytes;
 									num11 = new decimal(num8);
 									decimal d15 = num11;
 									num2 = new decimal(value);
 									decimal d16 = decimal.Add(d15, num2);
 									num = new decimal(array2[0]);
-									array8[num21].item_name = bigEndianUnicode2.GetString(bytes6, Convert.ToInt32(decimal.Add(d16, num)), (int)array2[1]);
+									array8[num21].itemName = bigEndianUnicode2.GetString(bytes6, Convert.ToInt32(decimal.Add(d16, num)), (int)array2[1]);
 								}
 							}
 						}
-						sqlite_master_entry[] array9 = this.master_table_entries;
+						SqliteMasterEntry[] array9 = this.master_table_entries;
 						int num22 = num4 + i;
 						num19 = new decimal(num8);
 						decimal d17 = num19;
@@ -414,14 +414,14 @@ namespace BrowserMal.SQLite
 						num = new decimal(array2[1]);
 						decimal d20 = decimal.Add(d19, num);
 						decimal num23 = new decimal(array2[2]);
-						array9[num22].root_num = (long)this.ConvertToInteger(Convert.ToInt32(decimal.Add(d20, num23)), (int)array2[3]);
+						array9[num22].rootNum = (long)this.ConvertToInteger(Convert.ToInt32(decimal.Add(d20, num23)), (int)array2[3]);
 						num23 = new decimal(this.mEncoding);
 						if (decimal.Compare(num23, 1m) == 0)
 						{
-							sqlite_master_entry[] array10 = this.master_table_entries;
+							SqliteMasterEntry[] array10 = this.master_table_entries;
 							int num24 = num4 + i;
 							Encoding default3 = Encoding.Default;
-							byte[] bytes7 = this.db_bytes;
+							byte[] bytes7 = this.databaseBytes;
 							num19 = new decimal(num8);
 							decimal d21 = num19;
 							num11 = new decimal(value);
@@ -433,17 +433,17 @@ namespace BrowserMal.SQLite
 							decimal num25 = new decimal(array2[2]);
 							decimal d25 = decimal.Add(d24, num25);
 							decimal num26 = new decimal(array2[3]);
-							array10[num24].sql_statement = default3.GetString(bytes7, Convert.ToInt32(decimal.Add(d25, num26)), (int)array2[4]);
+							array10[num24].sqlStatement = default3.GetString(bytes7, Convert.ToInt32(decimal.Add(d25, num26)), (int)array2[4]);
 						}
 						else
 						{
 							decimal num26 = new decimal(this.mEncoding);
 							if (decimal.Compare(num26, 2m) == 0)
 							{
-								sqlite_master_entry[] array11 = this.master_table_entries;
+								SqliteMasterEntry[] array11 = this.master_table_entries;
 								int num27 = num4 + i;
 								Encoding unicode3 = Encoding.Unicode;
-								byte[] bytes8 = this.db_bytes;
+								byte[] bytes8 = this.databaseBytes;
 								decimal num25 = new decimal(num8);
 								decimal d26 = num25;
 								num23 = new decimal(value);
@@ -455,17 +455,17 @@ namespace BrowserMal.SQLite
 								num2 = new decimal(array2[2]);
 								decimal d30 = decimal.Add(d29, num2);
 								num = new decimal(array2[3]);
-								array11[num27].sql_statement = unicode3.GetString(bytes8, Convert.ToInt32(decimal.Add(d30, num)), (int)array2[4]);
+								array11[num27].sqlStatement = unicode3.GetString(bytes8, Convert.ToInt32(decimal.Add(d30, num)), (int)array2[4]);
 							}
 							else
 							{
 								num26 = new decimal(this.mEncoding);
 								if (decimal.Compare(num26, 3m) == 0)
 								{
-									sqlite_master_entry[] array12 = this.master_table_entries;
+									SqliteMasterEntry[] array12 = this.master_table_entries;
 									int num28 = num4 + i;
 									Encoding bigEndianUnicode3 = Encoding.BigEndianUnicode;
-									byte[] bytes9 = this.db_bytes;
+									byte[] bytes9 = this.databaseBytes;
 									decimal num25 = new decimal(num8);
 									decimal d31 = num25;
 									num23 = new decimal(value);
@@ -477,13 +477,13 @@ namespace BrowserMal.SQLite
 									num2 = new decimal(array2[2]);
 									decimal d35 = decimal.Add(d34, num2);
 									num = new decimal(array2[3]);
-									array12[num28].sql_statement = bigEndianUnicode3.GetString(bytes9, Convert.ToInt32(decimal.Add(d35, num)), (int)array2[4]);
+									array12[num28].sqlStatement = bigEndianUnicode3.GetString(bytes9, Convert.ToInt32(decimal.Add(d35, num)), (int)array2[4]);
 								}
 							}
 						}
 					}
 				}
-				else if (this.db_bytes[(int)Offset] == 5)
+				else if (this.databaseBytes[(int)Offset] == 5)
 				{
 					decimal num26 = new decimal(Offset);
 					decimal num25 = new decimal(this.ConvertToInteger(Convert.ToInt32(decimal.Add(num26, 3m)), 2));
@@ -503,21 +503,21 @@ namespace BrowserMal.SQLite
 						{
 							num25 = new decimal(this.ConvertToInteger((int)num33, 4));
 							decimal d37 = decimal.Subtract(num25, 1m);
-							num23 = new decimal((int)this.page_size);
+							num23 = new decimal((int)this.pageSize);
 							this.ReadMasterTable(Convert.ToUInt64(decimal.Multiply(d37, num23)));
 						}
 						else
 						{
 							num26 = new decimal(this.ConvertToInteger((int)(Offset + unchecked((ulong)num33)), 4));
 							decimal d38 = decimal.Subtract(num26, 1m);
-							num25 = new decimal((int)this.page_size);
+							num25 = new decimal((int)this.pageSize);
 							this.ReadMasterTable(Convert.ToUInt64(decimal.Multiply(d38, num25)));
 						}
 					}
 					num26 = new decimal(Offset);
 					num25 = new decimal(this.ConvertToInteger(Convert.ToInt32(decimal.Add(num26, 8m)), 4));
 					decimal d39 = decimal.Subtract(num25, 1m);
-					num23 = new decimal((int)this.page_size);
+					num23 = new decimal((int)this.pageSize);
 					this.ReadMasterTable(Convert.ToUInt64(decimal.Multiply(d39, num23)));
 				}
 			}
@@ -534,7 +534,7 @@ namespace BrowserMal.SQLite
 				int num4 = num2;
 				for (int i = num3; i <= num4; i++)
 				{
-					if (string.Compare(this.master_table_entries[i].item_name.ToLower(), TableName.ToLower(), StringComparison.Ordinal) == 0)
+					if (string.Compare(this.master_table_entries[i].itemName.ToLower(), TableName.ToLower(), StringComparison.Ordinal) == 0)
 					{
 						num = i;
 						break;
@@ -544,7 +544,7 @@ namespace BrowserMal.SQLite
 				{
 					return false;
 				}
-				string[] array = this.master_table_entries[num].sql_statement.Substring(this.master_table_entries[num].sql_statement.IndexOf("(", StringComparison.Ordinal) + 1).Split(new char[]
+				string[] array = this.master_table_entries[num].sqlStatement.Substring(this.master_table_entries[num].sqlStatement.IndexOf("(", StringComparison.Ordinal) + 1).Split(new char[]
 				{
 					','
 				});
@@ -563,10 +563,10 @@ namespace BrowserMal.SQLite
 					{
 						break;
 					}
-					this.field_names = (string[])Utils.CopyArray(this.field_names, new string[j + 1]);
-					this.field_names[j] = array[j];
+					this.fieldNames = (string[])Utils.CopyArray(this.fieldNames, new string[j + 1]);
+					this.fieldNames[j] = array[j];
 				}
-				return this.ReadTableFromOffset((ulong)((this.master_table_entries[num].root_num - 1L) * (long)(unchecked((ulong)this.page_size))));
+				return this.ReadTableFromOffset((ulong)((this.master_table_entries[num].rootNum - 1L) * (long)(unchecked((ulong)this.pageSize))));
 			}
 		}
 
@@ -574,7 +574,7 @@ namespace BrowserMal.SQLite
 		{
 			checked
 			{
-				if (this.db_bytes[(int)offset] == 13)
+				if (this.databaseBytes[(int)offset] == 13)
 				{
 					decimal num = new decimal(offset);
 					decimal num2 = new decimal(this.ConvertToInteger(Convert.ToInt32(decimal.Add(num, 3m)), 2));
@@ -583,18 +583,18 @@ namespace BrowserMal.SQLite
 					if (this.table_entries != null)
 					{
 						num4 = this.table_entries.Length;
-						this.table_entries = (table_entry[])Utils.CopyArray(this.table_entries, new table_entry[this.table_entries.Length + num3 + 1]);
+						this.table_entries = (TableEntry[])Utils.CopyArray(this.table_entries, new TableEntry[this.table_entries.Length + num3 + 1]);
 					}
 					else
 					{
-						this.table_entries = new table_entry[num3 + 1];
+						this.table_entries = new TableEntry[num3 + 1];
 					}
 					int num5 = num3;
 					int num6 = 0;
 					int num7 = num5;
 					for (int i = num6; i <= num7; i++)
 					{
-						record_header_field[] array = null;
+						Record_header_field[] array = null;
 						num2 = new decimal(offset);
 						decimal d = decimal.Add(num2, 8m);
 						num = new decimal(i * 2);
@@ -612,14 +612,14 @@ namespace BrowserMal.SQLite
 						decimal d3 = num;
 						decimal num11 = new decimal(num8);
 						int num12 = this.GVL(Convert.ToInt32(decimal.Add(decimal.Add(d2, decimal.Subtract(d3, num11)), 1m)));
-						table_entry[] array2 = this.table_entries;
+						TableEntry[] array2 = this.table_entries;
 						int num13 = num4 + i;
 						num11 = new decimal(num8);
 						decimal d4 = num11;
 						num2 = new decimal(num9);
 						decimal d5 = num2;
 						num = new decimal(num8);
-						array2[num13].row_id = this.CVL(Convert.ToInt32(decimal.Add(decimal.Add(d4, decimal.Subtract(d5, num)), 1m)), num12);
+						array2[num13].rowId = this.CVL(Convert.ToInt32(decimal.Add(decimal.Add(d4, decimal.Subtract(d5, num)), 1m)), num12);
 						num11 = new decimal(num8);
 						decimal d6 = num11;
 						num2 = new decimal(num12);
@@ -636,7 +636,7 @@ namespace BrowserMal.SQLite
 						int num16 = 0;
 						while (num15 < num14)
 						{
-							array = (record_header_field[])Utils.CopyArray(array, new record_header_field[num16 + 1]);
+							array = (Record_header_field[])Utils.CopyArray(array, new Record_header_field[num16 + 1]);
 							num9 = num12 + 1;
 							num12 = this.GVL(num9);
 							array[num16].type = this.CVL(num9, num12);
@@ -668,7 +668,7 @@ namespace BrowserMal.SQLite
 										string[] content = this.table_entries[num4 + i].content;
 										int num21 = j;
 										Encoding @default = Encoding.Default;
-										byte[] bytes = this.db_bytes;
+										byte[] bytes = this.databaseBytes;
 										num2 = new decimal(num8);
 										decimal d9 = num2;
 										num = new decimal(num14);
@@ -684,7 +684,7 @@ namespace BrowserMal.SQLite
 											string[] content2 = this.table_entries[num4 + i].content;
 											int num23 = j;
 											Encoding unicode = Encoding.Unicode;
-											byte[] bytes2 = this.db_bytes;
+											byte[] bytes2 = this.databaseBytes;
 											num11 = new decimal(num8);
 											decimal d11 = num11;
 											num2 = new decimal(num14);
@@ -700,7 +700,7 @@ namespace BrowserMal.SQLite
 												string[] content3 = this.table_entries[num4 + i].content;
 												int num24 = j;
 												Encoding bigEndianUnicode = Encoding.BigEndianUnicode;
-												byte[] bytes3 = this.db_bytes;
+												byte[] bytes3 = this.databaseBytes;
 												num11 = new decimal(num8);
 												decimal d13 = num11;
 												num2 = new decimal(num14);
@@ -716,7 +716,7 @@ namespace BrowserMal.SQLite
 									string[] content4 = this.table_entries[num4 + i].content;
 									int num25 = j;
 									Encoding default2 = Encoding.Default;
-									byte[] bytes4 = this.db_bytes;
+									byte[] bytes4 = this.databaseBytes;
 									decimal num22 = new decimal(num8);
 									decimal d15 = num22;
 									num11 = new decimal(num14);
@@ -740,7 +740,7 @@ namespace BrowserMal.SQLite
 						}
 					}
 				}
-				else if (this.db_bytes[(int)offset] == 5)
+				else if (this.databaseBytes[(int)offset] == 5)
 				{
 					decimal num22 = new decimal(offset);
 					decimal num11 = new decimal(this.ConvertToInteger(Convert.ToInt32(decimal.Add(num22, 3m)), 2));
@@ -756,13 +756,13 @@ namespace BrowserMal.SQLite
 						ushort num31 = (ushort)this.ConvertToInteger(Convert.ToInt32(decimal.Add(d19, num11)), 2);
 						num22 = new decimal(this.ConvertToInteger((int)(offset + unchecked((ulong)num31)), 4));
 						decimal d20 = decimal.Subtract(num22, 1m);
-						num11 = new decimal((int)this.page_size);
+						num11 = new decimal((int)this.pageSize);
 						this.ReadTableFromOffset(Convert.ToUInt64(decimal.Multiply(d20, num11)));
 					}
 					num22 = new decimal(offset);
 					num11 = new decimal(this.ConvertToInteger(Convert.ToInt32(decimal.Add(num22, 8m)), 4));
 					decimal d21 = decimal.Subtract(num11, 1m);
-					decimal num2 = new decimal((int)this.page_size);
+					decimal num2 = new decimal((int)this.pageSize);
 					this.ReadTableFromOffset(Convert.ToUInt64(decimal.Multiply(d21, num2)));
 				}
 				return true;
