@@ -21,6 +21,8 @@ namespace BrowserMal.Model
 
         public bool IsImportant() => isImportant;
 
+        public Func<object, object> GetFunction() => function;
+
         public object Format(object value) => function(value);
 
         public bool IsEncrypted() => isEncrypted;

