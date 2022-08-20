@@ -7,12 +7,55 @@ using Microsoft.VisualBasic.CompilerServices;
 
 namespace BrowserMal.SQLite
 {
-    public class SqliteHandler
-    {
+	public class SqliteHandler
+	{
+		private byte[] db_bytes;
+
+		private ulong mEncoding;
+
+		private string[] field_names;
+
+		private sqlite_master_entry[] master_table_entries;
+
+		private ushort page_size;
+
+		private byte[] SQLDataTypeSize;
+
+		private table_entry[] table_entries;
+
+		private struct record_header_field
+		{
+			public long size;
+
+			public long type;
+		}
+
+		private struct sqlite_master_entry
+		{
+			public long row_id;
+
+			public string item_type;
+
+			public string item_name;
+
+			public string astable_name;
+
+			public long root_num;
+
+			public string sql_statement;
+		}
+
+		private struct table_entry
+		{
+			public long row_id;
+
+			public string[] content;
+		}
+
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
 		public SqliteHandler(string baseName)
 		{
-			this.SQLDataTypeSize = new byte[]{ 0, 1, 2, 3, 4, 6, 8, 8, 0, 0 };
+			this.SQLDataTypeSize = new byte[] { 0, 1, 2, 3, 4, 6, 8, 8, 0, 0 };
 			checked
 			{
 				if (File.Exists(baseName))
@@ -33,7 +76,7 @@ namespace BrowserMal.SQLite
 						throw new Exception("Auto-vacuum capable database is not supported");
 
 					page_size = (ushort)ConvertToInteger(16, 2);
-                    mEncoding = ConvertToInteger(56, 4);
+					mEncoding = ConvertToInteger(56, 4);
 
 					decimal d = new decimal(mEncoding);
 					if (decimal.Compare(d, 0m) == 0)
@@ -133,7 +176,7 @@ namespace BrowserMal.SQLite
 		{
 			if (row_num >= table_entries.Length)
 				return null;
-			
+
 			if (field >= table_entries[row_num].content.Length)
 				return null;
 
@@ -220,8 +263,8 @@ namespace BrowserMal.SQLite
 							num8 += Offset;
 						}
 						int num9 = this.GVL((int)num8);
-                        _ = this.CVL((int)num8, num9);
-                        num2 = new decimal(num8);
+						_ = this.CVL((int)num8, num9);
+						num2 = new decimal(num8);
 						decimal d2 = num2;
 						num = new decimal(num9);
 						decimal d3 = num;
@@ -312,8 +355,8 @@ namespace BrowserMal.SQLite
 							}
 						}
 						num11 = new decimal(this.mEncoding);
-                        decimal num19;
-                        if (decimal.Compare(num11, 1m) == 0)
+						decimal num19;
+						if (decimal.Compare(num11, 1m) == 0)
 						{
 							sqlite_master_entry[] array6 = this.master_table_entries;
 							int num18 = num4 + i;
@@ -448,8 +491,8 @@ namespace BrowserMal.SQLite
 					int num30 = (int)num29;
 					int num31 = 0;
 					int num32 = num30;
-                    decimal num23;
-                    for (int j = num31; j <= num32; j++)
+					decimal num23;
+					for (int j = num31; j <= num32; j++)
 					{
 						num26 = new decimal(Offset);
 						decimal d36 = decimal.Add(num26, 12m);
@@ -724,49 +767,6 @@ namespace BrowserMal.SQLite
 				}
 				return true;
 			}
-		}
-
-		private byte[] db_bytes;
-
-		private ulong mEncoding;
-
-		private string[] field_names;
-
-		private sqlite_master_entry[] master_table_entries;
-
-		private ushort page_size;
-
-		private byte[] SQLDataTypeSize;
-
-		private table_entry[] table_entries;
-
-		private struct record_header_field
-		{
-			public long size;
-
-			public long type;
-		}
-
-		private struct sqlite_master_entry
-		{
-			public long row_id;
-
-			public string item_type;
-
-			public string item_name;
-
-			public string astable_name;
-
-			public long root_num;
-
-			public string sql_statement;
-		}
-
-		private struct table_entry
-		{
-			public long row_id;
-
-			public string[] content;
 		}
 	}
 }

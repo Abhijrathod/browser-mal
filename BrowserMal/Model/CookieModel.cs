@@ -1,4 +1,4 @@
-﻿namespace BrowserMal.Cookie
+﻿namespace BrowserMal.Model
 {
     public class CookieModel
     {

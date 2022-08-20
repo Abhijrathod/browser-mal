@@ -66,8 +66,8 @@
     <Compile Include="Browser\BrowserModel.cs" />
     <Compile Include="Browser\Util.cs" />
     <Compile Include="Class1.cs" />
-    <Compile Include="Cookie\CookieModel.cs" />
-    <Compile Include="Credential\CredentialModel.cs" />
+    <Compile Include="Model\CookieModel.cs" />
+    <Compile Include="Model\CredentialModel.cs" />
     <Compile Include="Filesaver\FileManager.cs" />
     <Compile Include="Manager\GenericManager.cs" />
     <Compile Include="Model\AddressesModel.cs" />

