@@ -78,10 +78,9 @@ namespace BrowserMal.Manager
             {
                 try
                 {
-                    string[] values = GrabSqliteValues(sqliteTableModel.GetColumns(), ref sqLiteHandler, i, masterKey);
-
-                    /*if (string.IsNullOrEmpty(values.Last()) && lastArgEncrypted)
-                        continue;*/
+                    string[] values = GrabAndValidateSqliteValues(sqliteTableModel.GetColumns(), ref sqLiteHandler, i, masterKey, out bool ignore);
+                    if (ignore)
+                        continue;
 
                     T obj = CreateInstanceOfType(values);
                     generic.Add(obj);
@@ -93,7 +92,7 @@ namespace BrowserMal.Manager
             return generic;
         }
 
-        private string[] GrabSqliteValues(List<ColumnModel> columns, ref SqliteHandler sqLiteHandler, int row, byte[] masterKey)
+        private string[] GrabAndValidateSqliteValues(List<ColumnModel> columns, ref SqliteHandler sqLiteHandler, int row, byte[] masterKey, out bool ignore)
         {
             string[] values = new string[columns.Count];
 
@@ -114,9 +113,17 @@ namespace BrowserMal.Manager
                     values[i] = (string)columns[i].Format(value);
                     continue;
                 }
+
+                if (columns[i].IsImportant() && string.IsNullOrEmpty(value))
+                {
+                    ignore = true;
+                    return default;
+                }
+
                 values[i] = value;
             }
-           
+
+            ignore = false;
             return values;
         }
     }

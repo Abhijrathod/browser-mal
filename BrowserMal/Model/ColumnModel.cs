@@ -8,14 +8,18 @@ namespace BrowserMal.Model
         private readonly string name;
         private readonly bool needsFormatting;
         private readonly Func<object, object> function;
+        private readonly bool isImportant;
 
-        public ColumnModel(string name, bool isEncrypted, bool needsFormatting, Func<object, object> function = null)
+        public ColumnModel(string name, bool isEncrypted, bool needsFormatting, bool isImportant, Func<object, object> function = null)
         {
             this.name = name;
             this.isEncrypted = isEncrypted;
             this.needsFormatting = needsFormatting;
+            this.isImportant = isImportant;
             this.function = function;
         }
+
+        public bool IsImportant() => isImportant;
 
         public object Format(object value) => function(value);
 
