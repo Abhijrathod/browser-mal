@@ -38,9 +38,7 @@ namespace BrowserMal.Browser
 			DateTime dateUnix = new DateTime(1970, 1, 1);
 
 			TimeSpan difference = dateUnix.Subtract(dateChromium);
-			double resolvedTimestamp = (Convert.ToInt64(chromiumTimestamp) / 1000000) - difference.TotalSeconds;
-
-			return resolvedTimestamp.ToString();
+			return ((Convert.ToInt64(chromiumTimestamp) / 1000000) - difference.TotalSeconds).ToString();
 		}
 
 		public static DateTime GetDateTimeFromTimestamp(string timestamp)

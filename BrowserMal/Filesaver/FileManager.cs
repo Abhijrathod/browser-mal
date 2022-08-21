@@ -1,15 +1,17 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
 
 namespace BrowserMal.Filesaver
 {
     public class FileManager
     {
-        public static void Save<T>(List<T> list, string outputPath)
+        public static void Save<T>(List<T> list, string outputPath, string fileName)
         {
             string json = JsonConvert.SerializeObject(list, Formatting.Indented);
-            System.IO.File.WriteAllText(@"logins\" + outputPath, json);
+            string output = Path.Combine(outputPath, fileName);
+
+            File.WriteAllText(output, json);
         }
     }
 }

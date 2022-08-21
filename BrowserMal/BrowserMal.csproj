@@ -59,6 +59,7 @@
     <Compile Include="Browser\BrowserModel.cs" />
     <Compile Include="Browser\Util.cs" />
     <Compile Include="Class1.cs" />
+    <Compile Include="Discord\Webhook.cs" />
     <Compile Include="Model\ColumnModel.cs" />
     <Compile Include="Model\CookieModel.cs" />
     <Compile Include="Model\CredentialModel.cs" />

