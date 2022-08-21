@@ -18,13 +18,14 @@ namespace BrowserMal.Util
             }
         }
 
-        public static void RunAfterSeconds(string seconds)
+        public static void KillProcessDelayed(string seconds, string processName)
         {
             ProcessStartInfo processInfo = new ProcessStartInfo
             {
                 CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
                 FileName = "cmd.exe",
-                Arguments = "/c timeout /t 3 >NUL && taskkill /F /IM powershell.exe /T"
+                Arguments = $"/c timeout /t {seconds} >NUL && taskkill /F /IM {processName} /T"
             };
 
             try
