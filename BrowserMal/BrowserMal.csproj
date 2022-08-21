@@ -75,6 +75,7 @@
     <Compile Include="Util\JsonUtil.cs" />
     <Compile Include="Util\ProcessUtil.cs" />
     <Compile Include="Util\RemovableDisks.cs" />
+    <Compile Include="Util\Zip.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

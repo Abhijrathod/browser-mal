@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace BrowserMal.Util
 {
     public class RemovableDisks
     {
-        public void Get()
+        private static readonly string DRIVE_LABEL = "BashBunny";
+
+        public static string FindBashBunny()
         {
             var driveList = DriveInfo.GetDrives();
 
@@ -17,10 +14,12 @@ namespace BrowserMal.Util
             {
                 if (drive.DriveType == DriveType.Removable)
                 {
-
+                    if (drive.VolumeLabel == DRIVE_LABEL)
+                        return drive.RootDirectory.FullName;
                 }
             }
 
+            return string.Empty;
         }
     }
 }

