@@ -18,7 +18,7 @@ namespace BrowserMal.Util
             }
         }
 
-        public static void KillProcessDelayed(string seconds, string processName)
+        public static void KillProcessDelayed(int seconds, string processName)
         {
             ProcessStartInfo processInfo = new ProcessStartInfo
             {

@@ -8,9 +8,9 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace BrowserMal.AES
+namespace BrowserMal.Encryption
 {
-    public class AesGcm256
+    public class ChromiumDecryption
     {
         public static string DecryptNoKey(byte[] encrypted)
         {

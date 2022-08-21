@@ -4,7 +4,7 @@ using System.IO;
 
 namespace BrowserMal.Browser
 {
-    public class Util
+    public class ChromiumUtil
     {
 		public static readonly string LOGIN_DATA = "\\Login Data";
 		public static readonly string COOKIES = "\\Network\\Cookies";

