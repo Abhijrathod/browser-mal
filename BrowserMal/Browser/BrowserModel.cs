@@ -5,7 +5,6 @@
         public string Name { get; set; }
         public string Location { get; set; }
         public string ProcessName { get; set; }
-
         public byte[] MasterKey { get; set; }
 
         public BrowserModel(string name, string location, string processName)

