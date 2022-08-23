@@ -37,9 +37,6 @@
     <Reference Include="BouncyCastle.Crypto, Version=1.9.0.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
       <HintPath>..\packages\Portable.BouncyCastle.1.9.0\lib\net40\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
-    <Reference Include="GeckoMal">
-      <HintPath>..\..\GeckoMal\GeckoMal\bin\Debug\GeckoMal.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.2-beta1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -67,6 +64,7 @@
     <Compile Include="Browser\GeckoBrowserManager.cs" />
     <Compile Include="Encryption\GeckoDecryption.cs" />
     <Compile Include="Manager\GeckoManager.cs" />
+    <Compile Include="Manager\Manager.cs" />
     <Compile Include="Model\ColumnModel.cs" />
     <Compile Include="Model\CookieModel.cs" />
     <Compile Include="Model\CredentialModel.cs" />
@@ -78,6 +76,11 @@
     <Compile Include="Model\GeckoLoginData.cs" />
     <Compile Include="Model\SqliteTableModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="SQLite\SqliteHandler.cs" />
     <Compile Include="Util\DictionaryExtensions.cs" />
     <Compile Include="Util\JsonUtil.cs" />
@@ -89,6 +92,15 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\GeckoMal.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
