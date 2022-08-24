@@ -1,4 +1,6 @@
 # browser-mal
+This was made to be used with bash bunny for experimenting with payloads.
+Please do not use for illegal activities.
 
 ## Merge Dll's
 

