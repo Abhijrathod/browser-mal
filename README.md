@@ -42,6 +42,7 @@ ILMerge.exe /out:browser.mal.dll BrowserMal.dll BouncyCastle.Crypto.dll Newtonso
 - Mozilla Thunderbird
 
 Although for the gecko based browsers there is a bug where only 
-the passwords for the first browser on the list gets fetched
+the passwords for the first browser on the list gets fetched,
+so all the other ones come with empty usernames and passwords (trying to fix)
 
 ![](https://raw.githubusercontent.com/miltinhoc/browser-mal/main/gif/browsermal.gif)
