@@ -6,4 +6,4 @@ To merge all the dll's into one:
 ILMerge.exe /out:browser.mal.dll BrowserMal.dll BouncyCastle.Crypto.dll Newtonsoft.Json.dll 
 ```
 
-![](https://i.imgur.com/7jPToLn.gif)
+![](https://i.imgur.com/ZMC18ZR.gif)
