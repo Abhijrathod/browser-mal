@@ -89,6 +89,8 @@ namespace BrowserMal.Manager
                         result.Add(obj);
                     }
 
+                    geckoDecryption.Free();
+
                     break;
                 }
             }
