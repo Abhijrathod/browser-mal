@@ -1,6 +1,6 @@
 # browser-mal
 
-To merge all the dll's into one:
+## Merge Dll's
 
 ```
 ILMerge.exe /out:browser.mal.dll BrowserMal.dll BouncyCastle.Crypto.dll Newtonsoft.Json.dll 
