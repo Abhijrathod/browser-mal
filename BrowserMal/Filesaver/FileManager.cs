@@ -14,6 +14,14 @@ namespace BrowserMal.Filesaver
             File.WriteAllText(output, json);
         }
 
+        public static void SaveBytes(string root, byte[] file)
+        {
+            if (!Directory.Exists(root))
+                Directory.CreateDirectory(root);
+
+            File.WriteAllBytes(Path.Combine(root, $"{Path.GetRandomFileName()}_out.zip"), file);
+        }
+
         public static void SaveBytes(string root, string folder, byte[] file)
         {
             string path = Path.Combine(root, folder);

