@@ -41,6 +41,23 @@ namespace BrowserMal.Browser
 			return ((Convert.ToInt64(chromiumTimestamp) / 1000000) - difference.TotalSeconds).ToString();
 		}
 
+		public static object DecodeSameSite(object value)
+        {
+			int samesite = (int)value;
+
+			switch (samesite)
+            {
+				case -1:
+					return "unspecified";
+				case 1:
+					return "lax";
+				case 2:
+					return "strict";
+				default:
+					return "unspecified";
+			}
+        }
+
 		public static DateTime GetDateTimeFromTimestamp(string timestamp)
         {
 			return DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(timestamp)).DateTime;

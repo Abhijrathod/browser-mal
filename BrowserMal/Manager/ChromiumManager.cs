@@ -69,6 +69,8 @@ namespace BrowserMal.Manager
             SqliteHandler sqLiteHandler = new SqliteHandler(path);
             sqLiteHandler.ReadTable(_tableName);
 
+            SqliteHandler.TableEntry[] entries = sqLiteHandler.GetTableEntries();
+
             for (int i = 0; i <= sqLiteHandler.GetRowCount() - 1; i++)
             {
                 try

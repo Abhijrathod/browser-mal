@@ -37,19 +37,21 @@ namespace BrowserMal.SQLite
 
 			public string itemName;
 
-			//public string astable_name;
+			public string astable_name;
 
 			public long rootNum;
 
 			public string sqlStatement;
 		}
 
-		private struct TableEntry
+		public struct TableEntry
 		{
 			public long rowId;
 
 			public string[] content;
 		}
+
+		public TableEntry[] GetTableEntries() => table_entries;
 
 		private void ReadFile(string path)
         {
@@ -108,7 +110,7 @@ namespace BrowserMal.SQLite
 			checked
 			{
 				for (int i = 0; i <= Size - 1; i++)
-					num = (num << 8 | unchecked((ulong)this.databaseBytes[checked(startIndex + i)]));
+					num = num << 8 | unchecked(databaseBytes[checked(startIndex + i)]);
 
 				return num;
 			}
@@ -193,6 +195,11 @@ namespace BrowserMal.SQLite
 
 			return this.table_entries[row_num].content[field];
 		}
+
+		/*public int GetInt()
+        {
+
+        }*/
 
 		public string GetValue(int row_num, string field)
 		{
