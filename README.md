@@ -42,7 +42,3 @@ ILMerge.exe /out:browser.mal.dll BrowserMal.dll BouncyCastle.Crypto.dll Newtonso
 - Firefox Nightly
 - Waterfox
 - Mozilla Thunderbird
-
-## Demo
-
-![](https://i.imgur.com/ZMC18ZR.gif)
