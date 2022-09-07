@@ -20,6 +20,8 @@ namespace BrowserMal.Browser
             _browserModelsList.Add(new BrowserModel("Mozilla Thunderbird", Path.Combine(ApplicationData, @"Thunderbird\Profiles"), ""));
             _browserModelsList.Add(new BrowserModel("Mozilla Firefox", Path.Combine(ApplicationData, @"Mozilla\Firefox\Profiles"), "", ".default-release"));
             _browserModelsList.Add(new BrowserModel("Firefox Nightly", Path.Combine(ApplicationData, @"Mozilla\Firefox\Profiles"), "", "nightly"));
+            _browserModelsList.Add(new BrowserModel("Pale Moon", Path.Combine(ApplicationData, @"Moonchild Productions\Pale Moon\Profiles"), "", ""));
+            //_browserModelsList.Add(new BrowserModel("Comodo")) Comodo IceDragon 
         }
 
         public List<BrowserModel> GetBrowsers() => _browserModelsList;

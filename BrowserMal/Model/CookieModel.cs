@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Reflection;
 
 namespace BrowserMal.Model
 {
+    [ObfuscationAttribute(Exclude = true, ApplyToMembers = true)]
     public class CookieModel
     {
         [JsonProperty("domain")]

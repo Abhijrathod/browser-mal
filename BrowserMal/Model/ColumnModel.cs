@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Reflection;
 
 namespace BrowserMal.Model
 {
+    [ObfuscationAttribute(Exclude = true, ApplyToMembers = true)]
     public class ColumnModel
     {
         private readonly bool isEncrypted;

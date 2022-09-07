@@ -1,5 +1,8 @@
-﻿namespace BrowserMal.Model
+﻿using System.Reflection;
+
+namespace BrowserMal.Model
 {
+    [ObfuscationAttribute(Exclude = true, ApplyToMembers = true)]
     public class CreditCardModel
     {
         public string CardHolder { get; set; }
