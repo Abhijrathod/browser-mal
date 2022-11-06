@@ -57,10 +57,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Discord\DiscordMessageManager.cs" />
+    <Compile Include="Discord\DiscordUserManager.cs" />
     <Compile Include="Discord\Model\AllowedMentions.cs" />
     <Compile Include="Discord\Model\Author.cs" />
     <Compile Include="Discord\DiscordManager.cs" />
     <Compile Include="Discord\Model\DiscordMessage.cs" />
+    <Compile Include="Discord\Model\DiscordUser.cs" />
     <Compile Include="Discord\Model\Embed.cs" />
     <Compile Include="Discord\Model\Field.cs" />
     <Compile Include="Discord\Model\Footer.cs" />

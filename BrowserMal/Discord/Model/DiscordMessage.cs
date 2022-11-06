@@ -5,7 +5,7 @@ namespace BrowserMal.Discord.Model
     public class DiscordMessage
     {
         public string username { get; set; }
-        //public string avatar_url { get; set; }
+        public string avatar_url { get; set; }
         public string content { get; set; }
         //public AllowedMentions allowed_mentions { get; set; }
 
