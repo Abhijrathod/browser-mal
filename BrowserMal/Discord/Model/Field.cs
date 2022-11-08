@@ -1,5 +1,8 @@
-﻿namespace BrowserMal.Discord.Model
+﻿using System.Reflection;
+
+namespace BrowserMal.Discord.Model
 {
+    [Obfuscation(ApplyToMembers = false)]
     public class Field
     {
         public string name { get; set; }

